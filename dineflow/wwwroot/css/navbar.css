@@ -29,6 +29,7 @@ body {
 }
 
 .main {
+/*    height:100%;*/
     min-height: 100vh;
     width: 100%;
     overflow: hidden;
@@ -39,7 +40,7 @@ body {
 #sidebar {
     width: 70px;
     min-width: 80px;
-    z-index: 1000;
+    z-index: 10 00;
     transition: all .25s ease-in-out;
     background-color: #0e2238;
     display: flex;

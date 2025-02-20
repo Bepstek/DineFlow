@@ -1,5 +1,4 @@
 ﻿<!DOCTYPE html>
-
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
@@ -11,7 +10,7 @@
     <link rel="stylesheet" href="~/css/navbar.css" asp-append-version="true" />
 </head>
 <body>
-    <div class="wrapper">
+    <div class="container-fluid p-0 d-flex h-100">
         <aside id="sidebar">
             <div class="d-flex">
                 <button class="toggle-btn" type="button">
@@ -23,19 +22,19 @@
             </div>
             <ul class="sidebar-nav">
                 <li class="sidebar-item">
-                    <a href="#" class="sidebar-link">
+                    <a class="sidebar-link" asp-area="" asp-controller="Dashboard" asp-action="Index">
                         <i class="lni lni-dashboard"></i>
                         <span>Dashboard</span>
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a href="#" class="sidebar-link">
+                    <a class="sidebar-link" asp-area="" asp-controller="Dashboard" asp-action="Pos">
                         <i class="lni lni-cart"></i>
                         <span>POS</span>
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a href="#" class="sidebar-link">
+                    <a class="sidebar-link" asp-area="" asp-controller="Dashboard" asp-action="Inventory">
                         <i class="lni lni-archive"></i>
                         <span>Inventory</span>
                     </a>
@@ -48,31 +47,31 @@
                     </a>
                     <ul id="admin-dropdown" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
                         <li class="sidebar-item">
-                            <a href="#" class="sidebar-link">
+                            <a class="sidebar-link" asp-area="" asp-controller="Dashboard" asp-action="Management">
                                 <i class="lni lni-users"></i>
                                 Management
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="#" class="sidebar-link">
+                            <a class="sidebar-link" asp-area="" asp-controller="Dashboard" asp-action="Table">
                                 <i class="lni lni-grid-alt"></i>
                                 Table
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="#" class="sidebar-link">
+                            <a class="sidebar-link" asp-area="" asp-controller="Dashboard" asp-action="Product">
                                 <i class="lni lni-package"></i>
                                 Product
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="#" class="sidebar-link">
+                            <a class="sidebar-link" asp-area="" asp-controller="Dashboard" asp-action="Transaction">
                                 <i class="lni lni-revenue"></i>
                                 Transaction
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="#" class="sidebar-link">
+                            <a class="sidebar-link" asp-area="" asp-controller="Dashboard" asp-action="Settings">
                                 <i class="lni lni-cog"></i>
                                 Settings
                             </a>
@@ -90,10 +89,26 @@
                     <button type="submit"></button>
                 </form>
             </div>
-
         </aside>
-        <div>
-            @RenderBody()
+
+        <div class="bg-light flex-fill">
+            <div class="p-1">
+                <nav style="--bs-breadcrumb-divider:'>'; font-size:14px;">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <i class="fa-solid fa-house"></i>
+                        </li>
+                        <li class="breadcrumb-item">Dashboard</li>
+                    </ol>
+                </nav>
+                <hr>
+
+                <div class="row">
+                    <div>
+                        @RenderBody()
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </body>
@@ -102,10 +117,10 @@
         crossorigin="anonymous"></script>
 <script src="script.js"></script>
 <script>
-        const hamBurger = document.querySelector(".toggle-btn");
+    const hamBurger = document.querySelector(".toggle-btn");
 
     hamBurger.addEventListener("click", function () {
-      document.querySelector("#sidebar").classList.toggle("expand");
+        document.querySelector("#sidebar").classList.toggle("expand");
     });
 </script>
 </html>
