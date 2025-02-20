@@ -4,19 +4,57 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+// Configure database connection
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+// Configure Identity
+builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = true;
+})
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+// Configure Cookie Authentication and Redirection After Login
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Identity/Account/Login"; // Redirect unauthenticated users to Login
+    options.AccessDeniedPath = "/Home"; // Redirect unauthorized users to Home
+
+    options.Events.OnRedirectToReturnUrl = context =>
+    {
+        if (!context.HttpContext.User.Identity.IsAuthenticated)
+        {
+            // If user is not logged in, send them to the login page
+            context.Response.Redirect(options.LoginPath);
+        }
+        else if (string.IsNullOrEmpty(context.Request.Query["returnUrl"]))
+        {
+            // If no return URL is provided, go to Dashboard
+            context.Response.Redirect("/Dashboard");
+        }
+        else
+        {
+            // Redirect to the original requested page
+            context.Response.Redirect(context.Request.Query["returnUrl"]);
+        }
+
+        return Task.CompletedTask;
+    };
+});
+
+
+// Add controllers and views
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
@@ -24,7 +62,6 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -33,11 +70,15 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication(); // Ensure authentication middleware is enabled
 app.UseAuthorization();
 
+// Set up default route mapping
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+// Map Razor Pages for Identity UI
 app.MapRazorPages();
 
 app.Run();
