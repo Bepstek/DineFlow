@@ -78,6 +78,12 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+app.MapControllerRoute(
+    name: "dashboard",
+    pattern: "{controller=Dashboard}/{action=Reservation}/{id?}");
+
+
+
 // Map Razor Pages for Identity UI
 app.MapRazorPages();
 

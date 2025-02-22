@@ -1,0 +1,42 @@
+﻿@model List<dineflow.Models.Booking>
+
+@{
+    ViewData["Title"] = "Reservation";
+}
+
+<div class="main p-6">
+    <h2>Booking Reservations</h2>
+
+    @if (Model != null && Model.Count > 0)
+    {
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Booking Date</th>
+                    <th>Guests</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var booking in Model)
+                {
+                    <tr>
+                        <td>@booking.Id</td>
+                        <td>@booking.Name</td>
+                        <td>@booking.Email</td>
+                        <td>@booking.PhoneNumber</td>
+                        <td>@(booking.DateTime.ToString("yyyy-MM-dd HH:mm"))</td>
+                        <td>@booking.NumberOfPeople</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No bookings found.</p>
+    }
+</div>

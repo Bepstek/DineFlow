@@ -1,0 +1,62 @@
+﻿@model dineflow.Models.Menu
+
+<div class="main">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 col-md-12 bg-dark p-5 rounded">
+                <h5 class="section-title ff-secondary text-start text-primary fw-normal">Reservation</h5>
+                <h1 class="text-white mb-4">Book A Table Online</h1>
+                <form asp-action="CreateMenu" method="post" enctype="multipart/form-data">
+                    <div class="row g-4">
+                        <div class="col-lg-6 col-md-12">
+                            <div class="mb-3">
+                                <div class="form-floating">
+                                    <input asp-for="Name" class="form-control" id="name" placeholder="Enter dish name" required>
+                                    <label for="name">Dish Name</label>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-floating">
+                                    <select asp-for="Category" class="form-select" id="category" required>
+                                        <option value="">Select Category</option>
+                                        <option value="Breakfast">Breakfast</option>
+                                        <option value="Lunch">Lunch</option>
+                                        <option value="Dinner">Dinner</option>
+                                        <option value="Dessert">Dessert</option>
+                                    </select>
+                                    <label for="category">Category</label>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-floating">
+                                    <textarea asp-for="Description" class="form-control" id="description" placeholder="Enter description (optional)"></textarea>
+                                    <label for="description">Description</label>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-floating">
+                                    <input asp-for="Price" type="number" step="0.01" class="form-control" id="price" placeholder="Enter price" required>
+                                    <label for="price">Price</label>
+                                </div>
+                            </div>
+
+                            <!-- Image Upload -->
+                            <div class="mb-3">
+                                <label class="text-white">Upload Image</label>
+                                <input type="file" name="ImageFile" class="form-control" accept="image/*" required>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <button class="btn btn-primary w-100 py-3" type="submit">Submit</button>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>

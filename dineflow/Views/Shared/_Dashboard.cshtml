@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="~/css/navbar.css" asp-append-version="true" />
 </head>
 <body>
-    <div class="container-fluid p-0 d-flex h-100">
+    <div class="container-fluid p-0 d-flex ">
         <aside id="sidebar">
             <div class="d-flex">
                 <button class="toggle-btn" type="button">
@@ -31,6 +31,12 @@
                     <a class="sidebar-link" asp-area="" asp-controller="Dashboard" asp-action="Pos">
                         <i class="lni lni-cart"></i>
                         <span>POS</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" asp-area="" asp-controller="Dashboard" asp-action="Reservation">
+                        <i class="lni lni-cart"></i>
+                        <span>Reservation</span>
                     </a>
                 </li>
                 <li class="sidebar-item">
@@ -59,9 +65,9 @@
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a class="sidebar-link" asp-area="" asp-controller="Dashboard" asp-action="Product">
+                            <a class="sidebar-link" asp-area="" asp-controller="Dashboard" asp-action="Menu">
                                 <i class="lni lni-package"></i>
-                                Product
+                                Menu
                             </a>
                         </li>
                         <li class="sidebar-item">
@@ -79,6 +85,12 @@
                     </ul>
                 </li>
             </ul>
+            <div class="sidebar-footer">
+                <a class="sidebar-link" asp-area="Identity" asp-page="/Account/Manage/Index">
+                    <i class="lni lni-user"></i> <!-- Change to lni-user if lni-person is not working -->
+                    <span>@User.Identity?.Name</span>
+                </a>
+            </div>
 
             <div class="sidebar-footer">
                 <a class="sidebar-link" href="#" onclick="document.getElementById('logoutForm').submit(); return false;">
@@ -93,15 +105,7 @@
 
         <div class="bg-light flex-fill">
             <div class="p-1">
-                <nav style="--bs-breadcrumb-divider:'>'; font-size:14px;">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item">
-                            <i class="fa-solid fa-house"></i>
-                        </li>
-                        <li class="breadcrumb-item">Dashboard</li>
-                    </ol>
-                </nav>
-                <hr>
+                
 
                 <div class="row">
                     <div>
@@ -112,6 +116,7 @@
         </div>
     </div>
 </body>
+@await RenderSectionAsync("Scripts", required: false)
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
         crossorigin="anonymous"></script>

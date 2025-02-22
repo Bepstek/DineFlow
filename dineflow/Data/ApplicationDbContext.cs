@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using dineflow.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace dineflow.Data
@@ -9,5 +10,7 @@ namespace dineflow.Data
             : base(options)
         {
         }
+        public DbSet<Booking> Bookings { get; set; }
+        public DbSet<Menu> Menus { get; set; }
     }
 }

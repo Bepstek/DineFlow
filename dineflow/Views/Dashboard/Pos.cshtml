@@ -1,19 +1,203 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
-<div class="main p-6">
-	<h2>Welcome to the Pos!</h2>
-    <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
-            Hello @User.Identity?.Name!
-        </a>
-    </li>
-    <li class="nav-item">
-        <form method="post" class="sidebar-link" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-            <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
-        </form>
-    </li>
-</div>
+﻿
+    <style>
+        
 
+        
+
+        .product-card {
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            background-color: white;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+            .product-card img {
+                max-width: 100%;
+                height: 120px;
+                object-fit: cover;
+                border-radius: 10px;
+            }
+
+    .order-details {
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        height: 100%; /* Ensure it takes the full height of its container */
+        display: flex;
+        flex-direction: column;
+    }
+
+    #cart-items {
+        max-height: 250px; /* Adjust height as needed */
+        overflow-y: auto; /* Enables scrolling */
+        flex-grow: 1; /* Allows it to expand while keeping footer at the bottom */
+        border-bottom: 1px solid #ddd; /* Separates items from footer */
+        padding-bottom: 10px;
+    }
+
+    .order-footer {
+        padding-top: 10px;
+        background: white;
+    }
+
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+    </style>
+
+
+<div class="main">
+   
+    <div class="container-fluid">
+        <div class="row">
+        <div class="mb-3">
+            <button class="btn btn-secondary btn-sm" onclick="filterProducts('All')">All</button>
+            <button class="btn btn-secondary btn-sm" onclick="filterProducts('Breakfast')">Breakfast</button>
+            <button class="btn btn-secondary btn-sm" onclick="filterProducts('Lunch')">Lunch</button>
+            <button class="btn btn-secondary btn-sm" onclick="filterProducts('Dinner')">Dinner</button>
+            <button class="btn btn-secondary btn-sm" onclick="filterProducts('Dessert')">Dessert</button>
+        </div>
+            <!-- Product Section -->
+            <div class="col-md-8">
+                <h3>Products</h3>
+                <div class="row g-2" id="product-list">
+                    <!-- Products will be dynamically loaded here -->
+                </div>
+            </div>
+
+            <!-- Cart Section -->
+            <div class="col-md-4 d-flex flex-column">
+                <div class="order-details">
+                    <h4>Order Details</h4>
+                    <div id="cart-items"></div>
+                    <div class="order-footer">
+                        <h4>Total: ₱<span id="total">0</span></h4>
+                        <div class="mb-2">Payment Method: Cash</div>
+                        <div class="mb-2">Cash: <input type="number" class="form-control" id="cash-input" oninput="calculateChange()"></div>
+                        <div class="mb-2">Change: ₱<span id="change">0.00</span></div>
+                        <button class="btn btn-primary w-100 mt-2" onclick="checkout()">Checkout</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+    <script>
+        let products = [
+            { name: "Pancakes", price: 100, category: "Breakfast", image: "https://via.placeholder.com/150" },
+            { name: "Omelette", price: 80, category: "Breakfast", image: "https://via.placeholder.com/150" },
+            { name: "Grilled Chicken", price: 150, category: "Lunch", image: "https://via.placeholder.com/150" },
+            { name: "Rice Bowl", price: 120, category: "Lunch", image: "https://via.placeholder.com/150" },
+            { name: "Steak", price: 250, category: "Dinner", image: "https://via.placeholder.com/150" },
+            { name: "Salmon", price: 200, category: "Dinner", image: "https://via.placeholder.com/150" },
+            { name: "Ice Cream", price: 50, category: "Dessert", image: "https://via.placeholder.com/150" },
+            { name: "Cake", price: 75, category: "Dessert", image: "https://via.placeholder.com/150" },
+            { name: "Burger", price: 130, category: "Lunch", image: "https://via.placeholder.com/150" },
+            { name: "Pizza", price: 180, category: "Dinner", image: "https://via.placeholder.com/150" }
+        ];
+
+        let cart = [];
+
+        function displayProducts() {
+            let productContainer = document.getElementById("product-list");
+            productContainer.innerHTML = "";
+            products.forEach(product => {
+                productContainer.innerHTML += `
+                    <div class="col-md-4">
+                        <div class="product-card p-2">
+                            <img src="${product.image}" alt="${product.name}">
+                            <h5>${product.name}</h5>
+                            <p>₱${product.price}</p>
+                            <button class="btn btn-success btn-sm" onclick="addToCart('${product.name}', ${product.price})">Add</button>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function addToCart(name, price) {
+            let existing = cart.find(item => item.name === name);
+            if (existing) {
+                existing.quantity++;
+            } else {
+                cart.push({ name, price, quantity: 1 });
+            }
+            updateCart();
+        }
+
+        function removeFromCart(name) {
+            cart = cart.filter(item => item.name !== name);
+            updateCart();
+        }
+
+        function updateCart() {
+            let cartItems = document.getElementById('cart-items');
+            let total = 0;
+            cartItems.innerHTML = '';
+
+            cart.forEach(item => {
+                total += item.price * item.quantity;
+                cartItems.innerHTML += `
+                    <div class="cart-item">
+                        <span>${item.name} x ${item.quantity}</span>
+                        <span>₱${item.price * item.quantity}</span>
+                        <button class="btn btn-danger btn-sm" onclick="removeFromCart('${item.name}')">X</button>
+                    </div>`;
+            });
+            document.getElementById('total').innerText = total;
+            calculateChange();
+        }
+
+        function calculateChange() {
+            let cashInput = document.getElementById("cash-input").value;
+            let total = parseFloat(document.getElementById("total").innerText);
+            let change = cashInput - total;
+            document.getElementById("change").innerText = change > 0 ? change.toFixed(2) : "0.00";
+        }
+
+        function checkout() {
+            if (cart.length === 0) {
+                alert("Cart is empty!");
+                return;
+            }
+            alert("Order placed successfully!");
+            cart = [];
+            updateCart();
+        }
+
+        displayProducts();
+    </script>
+<script>
+    let currentCategory = 'All';
+
+    function filterProducts(category) {
+        currentCategory = category;
+        displayProducts();
+    }
+
+    function displayProducts() {
+        let productContainer = document.getElementById("product-list");
+        productContainer.innerHTML = "";
+        products.forEach(product => {
+            if (currentCategory === 'All' || product.category === currentCategory) {
+                productContainer.innerHTML += `
+                    <div class="col-md-4">
+                        <div class="product-card p-2">
+                            <img src="${product.image}" alt="${product.name}">
+                            <h5>${product.name}</h5>
+                            <p>₱${product.price}</p>
+                            <button class="btn btn-success btn-sm" onclick="addToCart('${product.name}', ${product.price})">Add</button>
+                        </div>
+                    </div>`;
+            }
+        });
+    }
+
+    displayProducts();
+</script>
