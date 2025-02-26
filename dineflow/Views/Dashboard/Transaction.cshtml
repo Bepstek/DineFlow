@@ -1,16 +1,147 @@
-﻿@{
-    
+﻿@model IEnumerable<dineflow.Models.Transaction>
+
+@{
+    ViewData["Title"] = "Transactions";
 }
-<div class="main p-6">
-    <h2>Welcome to the Transaction!</h2>
-    <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
-            Hello @User.Identity?.Name!
-        </a>
-    </li>
-    <li class="nav-item">
-        <form method="post" class="sidebar-link" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-            <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
-        </form>
-    </li>
+
+<div class="main p-4">
+    <h3 class="mb-4">Transaction Records</h3>
+
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>Transaction ID</th>
+                    <th>User</th>
+                    <th>Date</th>
+                    <th>Table</th>
+                    <th>Total Amount</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.TransactionId</td>
+                        <td>@item.UserId</td>
+                        <td>@item.OrderDate.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                        <td>@item.TableId</td>
+                        <td>@item.TotalAmount.ToString("C")</td>
+                        <td>@item.Status</td>
+                        <td>
+                            <a asp-action="TransactionDetails" asp-route-id="@item.TransactionId">Details</a>
+                            @* <button class="btn btn-info btn-sm view-details" data-transactionid="@item.TransactionId" data-bs-toggle="modal" data-bs-target="#transactionModal"> *@
+                            @*     Details *@
+                            @* </button> *@
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
+
+<!-- Transaction Details Modal -->
+<div class="modal fade" id="transactionModal" tabindex="-1" aria-labelledby="transactionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="transactionModalLabel">Transaction Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Transaction ID:</strong> <span id="modalTransactionId"></span></p>
+                <p><strong>User:</strong> <span id="modalUserId"></span></p>
+                <p><strong>Order Date:</strong> <span id="modalOrderDate"></span></p>
+                <p><strong>Table:</strong> <span id="modalTableId"></span></p>
+                <p><strong>Total Amount:</strong> <span id="modalTotalAmount"></span></p>
+                <p><strong>Status:</strong> <span id="modalStatus"></span></p>
+                <hr>
+                <h6>Transaction Items:</h6>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modalTransactionItems">
+                        <tr>
+                            <td colspan="3" class="text-center">No items available</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+@* <script> *@
+@*         $(document).ready(function () { *@
+@*         $(".view-details").click(function () { *@
+@*             let transactionId = $(this).data("transactionid"); *@
+
+@*             $.ajax({ *@
+@*                 url: `/Dashboard/TransactionModal?id=${transactionId}`, *@
+@*                 type: "GET", *@
+@*                 success: function (data) { *@
+@*                     $("#transactionModal .modal-content").html(data); *@
+@*                     $("#transactionModal").modal("show"); *@
+@*                 }, *@
+@*                 error: function () { *@
+@*                     alert("An error occurred while fetching transaction details."); *@
+@*                 } *@
+@*             }); *@
+@*         }); *@
+@*     }); *@
+
+@* </script> *@
+@* <script> *@
+@*     document.addEventListener("DOMContentLoaded", function () { *@
+@*         document.querySelectorAll(".view-details").forEach(button => { *@
+@*             button.addEventListener("click", function () { *@
+@*                 let transactionId = this.getAttribute("data-transactionid"); *@
+
+@*                 fetch(`/Dashboard/GetTransactionDetails?id=${transactionId}`) *@
+@*                     .then(response => response.json()) *@
+@*                     .then(data => { *@
+@*                         if (data.Transaction) { *@
+@*                             document.getElementById("modalTransactionId").textContent = data.Transaction.TransactionId; *@
+@*                             document.getElementById("modalUserId").textContent = data.Transaction.UserId; *@
+@*                             document.getElementById("modalOrderDate").textContent = new Date(data.Transaction.OrderDate).toLocaleString(); *@
+@*                             document.getElementById("modalTableId").textContent = data.Transaction.TableId; *@
+@*                             document.getElementById("modalTotalAmount").textContent = data.Transaction.TotalAmount.toFixed(2); *@
+@*                             document.getElementById("modalStatus").textContent = data.Transaction.Status; *@
+
+@*                             let itemsTable = document.getElementById("modalTransactionItems"); *@
+@*                             itemsTable.innerHTML = ""; *@
+
+@*                             if (data.TransactionDetails.length > 0) { *@
+@*                                 data.TransactionDetails.forEach(detail => { *@
+@*                                     let row = `<tr> *@
+@*                                         <td>${detail.ItemName || "Unknown Item"}</td> *@
+@*                                         <td>${detail.Quantity}</td> *@
+@*                                         <td>${detail.Price.toFixed(2)}</td> *@
+@*                                     </tr>`; *@
+@*                                     itemsTable.innerHTML += row; *@
+@*                                 }); *@
+@*                             } else { *@
+@*                                 itemsTable.innerHTML = `<tr><td colspan="3" class="text-center">No items available</td></tr>`; *@
+@*                             } *@
+@*                         } else { *@
+@*                             alert("Transaction details not found."); *@
+@*                         } *@
+@*                     }) *@
+@*                     .catch(error => { *@
+@*                         console.error("Error fetching transaction details:", error); *@
+@*                         alert("An error occurred while fetching transaction details."); *@
+@*                     }); *@
+@*             }); *@
+@*         }); *@
+@*     }); *@
+@* </script> *@

@@ -1,9 +1,8 @@
-﻿
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace dineflow.Models
 {
-    public class Booking
+    public class Reservation
     {
         [Key]
         public int Id { get; set; }

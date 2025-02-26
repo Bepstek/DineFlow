@@ -1,110 +1,237 @@
-﻿using dineflow.Controllers;
-using dineflow.Data;
-using dineflow.Models;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿    using System.Net;
+    using dineflow.Controllers;
+    using dineflow.Data;
+    using dineflow.Models;
+    using dineflow.ViewModel;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;    
 
-[Authorize] // Ensure only authenticated users can access
-public class DashboardController : Controller
-{
-    private readonly ILogger<DashboardController> _logger;
-    private readonly ApplicationDbContext _context; // Inject database context
-    private readonly UserManager<IdentityUser> _userManager;
-    private readonly IWebHostEnvironment _webHostEnvironment;
-
-    public DashboardController(ILogger<DashboardController> logger, ApplicationDbContext context, UserManager<IdentityUser> userManager, IWebHostEnvironment webHostEnvironment)
+    [Authorize] // Ensure only authenticated users can access
+    public class DashboardController : Controller
     {
-        _logger = logger;
-        _context = context;
-        _userManager = userManager;
-        _webHostEnvironment = webHostEnvironment;
-    }
-    public IActionResult Index()
-    {
-        return View(); // No need to check authentication, the [Authorize] attribute already ensures it
-    }
-    public IActionResult Inventory()
-    {
-        return View(); // No need to check authentication, the [Authorize] attribute already ensures it
-    }
-    public IActionResult Management()
-    {
-        var users = _userManager.Users.ToList(); // Get all users
-        return View(users);
-    }
-    public IActionResult Pos()
-    {
-        return View(); // No need to check authentication, the [Authorize] attribute already ensures it
-    }
-    public async Task<IActionResult> Reservation()
+        private readonly ILogger<DashboardController> _logger;
+        private readonly ApplicationDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        public DashboardController(ILogger<DashboardController> logger, RoleManager<IdentityRole> roleManager, ApplicationDbContext context, UserManager<IdentityUser> userManager, IWebHostEnvironment webHostEnvironment)
         {
-            var bookings = await _context.Bookings.ToListAsync();
-            return View(bookings); 
+            _logger = logger;
+            _roleManager = roleManager;
+            _context = context;
+            _userManager = userManager;
+            _webHostEnvironment = webHostEnvironment;
         }
+        public IActionResult Role()
+        {
+            var roles = _roleManager.Roles;
+            return View(roles);
+        }
+    [HttpGet]
+        public IActionResult CreateRole()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> CreateRole(IdentityRole role)
+        {
+            if (!_roleManager.RoleExistsAsync(role.Name).GetAwaiter().GetResult())
+            {
+                _roleManager.CreateAsync(new IdentityRole(role.Name)).GetAwaiter().GetResult();
+            }
+            return RedirectToAction("Index");
+        }
+    public IActionResult Index()
+        {
+            return View(); 
+        }
+        public IActionResult Inventory()
+        {
+            return View(); // No need to check authentication, the [Authorize] attribute already ensures it
+        }
+        public IActionResult Management()
+        {
+            var users = _userManager.Users.ToList(); // Get all users
+            return View(users);
+        }
+        public IActionResult Pos(int reservationId)
+        {
+             ViewBag.ReservationId = reservationId;
+            var menuItems = _context.Menus.ToList(); // Fetch data from the database
+            return View(menuItems); // Pass data to the view
+        }
+
+    public async Task<IActionResult> Reservation()
+    {
+        var bookings = await _context.Reservations.ToListAsync();
+        return View(bookings);
+    }
+
     public IActionResult Menu()
+        {
+            var dish = _context.Menus.ToList();
+            return View(dish); 
+        }
+        public IActionResult AddMenu()
+        {
+            return View();
+        }
+        //public IActionResult CreateDish()
+        //{
+        //    return View();
+        //}
+        [HttpPost]
+    public IActionResult CreateDish(MenuViewModel vm)
     {
-        return View(); // No need to check authentication, the [Authorize] attribute already ensures it
+        string stringFileName = UploadFile(vm);
+        var dish = new Menu
+        {
+            Name = vm.Name,
+            Category = vm.Category,
+            Description = vm.Description,
+            Price = vm.Price,
+            ImageBase64 = stringFileName
+
+        };
+        _context.Menus.Add(dish);
+        _context.SaveChanges();
+        return RedirectToAction("Menu");
     }
+
+    private string UploadFile(MenuViewModel vm)
+    {
+        string fileName = null;
+        if (vm.ImageFile != null)
+        {
+            string uploadDir = Path.Combine(_webHostEnvironment.WebRootPath, "dishimage");
+            fileName = Guid.NewGuid().ToString() + "-" + vm.ImageFile.FileName;
+            string filePath = Path.Combine(uploadDir, fileName);
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                vm.ImageFile.CopyTo(fileStream);
+            }
+        }
+        return fileName;
+    }
+
     public IActionResult Settings()
+        {
+            return View(); // No need to check authentication, the [Authorize] attribute already ensures it
+        }
+        public IActionResult Table()
+        {
+            return View(); // No need to check authentication, the [Authorize] attribute already ensures it
+        }
+        public IActionResult Transaction()
+        {
+        var transactions = _context.Transactions.ToList();
+        return View(transactions); 
+        }
+
+    public async Task<IActionResult> TransactionDetails(int? id)
     {
-        return View(); // No need to check authentication, the [Authorize] attribute already ensures it
-    }
-    public IActionResult Table()
-    {
-        return View(); // No need to check authentication, the [Authorize] attribute already ensures it
-    }
-    public IActionResult Transaction()
-    {
-        return View(); // No need to check authentication, the [Authorize] attribute already ensures it
-    }
-    public async Task<IActionResult> Details(string id)
-    {
-        var user = await _userManager.FindByIdAsync(id);
-        if (user == null)
+        if (id == null)
         {
             return NotFound();
         }
-        return View(user);
-    }
-    public IActionResult AddMenu()
-    {
-        return View(); // No need to check authentication, the [Authorize] attribute already ensures it
-    }
-    [HttpPost]
-    [HttpPost]
-    public async Task<IActionResult> CreateMenu(Menu menu, IFormFile ImageFile)
-    {
-        if (ModelState.IsValid)
+
+        var transactionDetails = await _context.TransactionDetails
+            .Include(td => td.Transaction)
+            .Include(td => td.MenuItem) // Include the related MenuItem table
+            .Where(td => td.TransactionId == id)
+            .ToListAsync();
+
+        if (!transactionDetails.Any())
         {
-            try
-            {
-                if (ImageFile != null && ImageFile.Length > 0)
-                {
-                    using (var ms = new MemoryStream())
-                    {
-                        await ImageFile.CopyToAsync(ms); // Copy image to memory stream
-                        byte[] imageBytes = ms.ToArray(); // Convert to byte array
-                        menu.ImageBase64 = Convert.ToBase64String(imageBytes); // Store as Base64 string
-                    }
-                }
-
-                _context.Menus.Add(menu);
-                await _context.SaveChangesAsync();
-
-                TempData["SuccessMessage"] = "Menu added successfully!";
-                return RedirectToAction("Menu");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error inserting menu: {ex.Message}");
-                ModelState.AddModelError("", "An error occurred while saving the menu.");
-            }
+            return NotFound();
         }
 
-        return View("AddMenu", menu);
+        return View(transactionDetails);
     }
+    [HttpGet]
+    public IActionResult GetTransactionDetails(int id)
+    {
+        var transaction = _context.Transactions
+            .Include(t => t.TransactionDetail)
+            .ThenInclude(td => td.MenuItem)
+            .FirstOrDefault(t => t.TransactionId == id);
+
+        if (transaction == null)
+        {
+            return Json(new { success = false, message = "Transaction not found" });
+        }
+
+        var transactionDetails = transaction.TransactionDetail.Select(td => new
+        {
+            ItemName = td.MenuItem.Name,
+            Quantity = td.Quantity,
+            Price = td.Price
+        }).ToList();
+
+        return Json(new
+        {
+            Transaction = new
+            {
+                transaction.TransactionId,
+                transaction.UserId,
+                transaction.OrderDate,
+                transaction.TableId,
+                transaction.TotalAmount,
+                transaction.Status
+            },
+            TransactionDetails = transactionDetails
+        });
+    }
+
+
+    [HttpGet]
+    public async Task<IActionResult> GetFiltered(string date, string status, string searchId)
+    {
+        var transactions = _context.Transactions.AsNoTracking().AsQueryable(); // Prevents caching
+
+        if (!string.IsNullOrEmpty(date) && DateTime.TryParse(date, out DateTime parsedDate))
+        {
+            transactions = transactions.Where(t => t.OrderDate.Date == parsedDate.Date);
+        }
+
+        if (!string.IsNullOrEmpty(status) && status.ToLower() != "all")
+        {
+            transactions = transactions.Where(t => t.Status.ToLower() == status.ToLower());
+        }
+
+        if (!string.IsNullOrEmpty(searchId))
+        {
+            transactions = transactions.Where(t => t.TransactionId.ToString().Contains(searchId));
+        }
+
+        var result = await transactions
+            .OrderByDescending(t => t.OrderDate) // Ensures newest transactions show first
+            .Select(t => new
+            {
+                t.TransactionId,
+                t.UserId,
+                t.OrderDate,
+                t.TableId,
+                t.TotalAmount,
+                t.Status
+            })
+            .ToListAsync();
+
+        return Json(result);
+    }
+
+    public async Task<IActionResult> Details(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return View(user);
+        }
+
 
 
 }

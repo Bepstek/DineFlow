@@ -4,28 +4,31 @@
 @{
     ViewData["Title"] = "User List";
 }
+<p>
+    <a asp-area="Identity" asp-page="/Account/Register">Add User</a>
+</p>
 <div class="main p-6">
-<h2>All Users</h2>
+    <h2>All Users</h2>
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Email</th>
-            <th>Username</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var user in Model)
-        {
+    <table class="table table-bordered">
+        <thead>
             <tr>
-                <td>@user.Email</td>
-                <td>@user.UserName</td>
-                <td>
-                    <a class="btn btn-primary" asp-controller="Dashboard" asp-action="Details" asp-route-id="@user.Id">View</a>
-                </td>
+                <th>Email</th>
+                <th>Username</th>
+                <th>Actions</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <td>@user.Email</td>
+                    <td>@user.UserName</td>
+                    <td>
+                        <a class="btn btn-primary" asp-controller="Dashboard" asp-action="Details" asp-route-id="@user.Id">View</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>
