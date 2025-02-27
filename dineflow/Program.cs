@@ -21,32 +21,32 @@ builder.Services.AddDefaultIdentity<IdentityUser>().AddDefaultTokenProviders()
 
 
 // Configure Cookie Authentication and Redirection After Login
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    options.LoginPath = "/Identity/Account/Login"; // Redirect unauthenticated users to Login
-    options.AccessDeniedPath = "/Home"; // Redirect unauthorized users to Home
+//builder.Services.ConfigureApplicationCookie(options =>
+//{
+//    options.LoginPath = "/Identity/Account/Login"; // Redirect unauthenticated users to Login
+//    options.AccessDeniedPath = "/Home"; // Redirect unauthorized users to Home
 
-    options.Events.OnRedirectToReturnUrl = context =>
-    {
-        if (!context.HttpContext.User.Identity.IsAuthenticated)
-        {
-            // If user is not logged in, send them to the login page
-            context.Response.Redirect(options.LoginPath);
-        }
-        else if (string.IsNullOrEmpty(context.Request.Query["returnUrl"]))
-        {
-            // If no return URL is provided, go to Dashboard
-            context.Response.Redirect("/Dashboard");
-        }
-        else
-        {
-            // Redirect to the original requested page
-            context.Response.Redirect(context.Request.Query["returnUrl"]);
-        }
+//    options.Events.OnRedirectToReturnUrl = context =>
+//    {
+//        if (!context.HttpContext.User.Identity.IsAuthenticated)
+//        {
+//            // If user is not logged in, send them to the login page
+//            context.Response.Redirect(options.LoginPath);
+//        }
+//        else if (string.IsNullOrEmpty(context.Request.Query["returnUrl"]))
+//        {
+//            // If no return URL is provided, go to Dashboard
+//            context.Response.Redirect("/Dashboard");
+//        }
+//        else
+//        {
+//            // Redirect to the original requested page
+//            context.Response.Redirect(context.Request.Query["returnUrl"]);
+//        }
 
-        return Task.CompletedTask;
-    };
-});
+//        return Task.CompletedTask;
+//    };
+//});
 
 
 // Add controllers and views
@@ -80,8 +80,10 @@ app.MapControllerRoute(
 
 app.MapControllerRoute(
     name: "dashboard",
-    pattern: "{controller=Dashboard}/{action=Reservation}/{id?}");
-
+    pattern: "{controller=Dashboard}/{action=Index}/{id?}");
+app.MapControllerRoute(
+    name: "dashboard",
+    pattern: "{controller=Admin}/{action=Management}/{id?}");
 
 
 // Map Razor Pages for Identity UI

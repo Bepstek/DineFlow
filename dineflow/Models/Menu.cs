@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace dineflow.Models
 {
     public class Menu
-
     {
         [Key]
         public int Id { get; set; }
@@ -11,8 +11,12 @@ namespace dineflow.Models
         [Required]
         public string Name { get; set; }
 
+        // Foreign Key for Category
         [Required]
-        public string Category { get; set; }
+        public int CategoryId { get; set; }
+
+        [ForeignKey("CategoryId")]
+        public virtual Category Category { get; set; }
 
         public string Description { get; set; }
 
@@ -20,9 +24,8 @@ namespace dineflow.Models
         [Range(0, double.MaxValue)]
         public decimal Price { get; set; }
 
-        public string ImageBase64 { get; set; } // This must match in the database
+        public string ImageBase64 { get; set; }
 
         public bool IsArchived { get; set; } = false;
     }
-
 }

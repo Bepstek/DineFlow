@@ -1,0 +1,38 @@
+﻿
+@model List<dineflow.Models.Category>
+
+@{
+    ViewData["Title"] = "Manage Categories";
+}
+
+<h2>Manage Categories</h2>
+<a class="btn btn-success mb-3" asp-action="CreateCategory">Add New Category</a>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var category in Model)
+        {
+            <tr>
+                <td>@category.Name</td>
+                <td>
+                    <a class="btn btn-primary" asp-action="EditCategory" asp-route-id="@category.Id">Edit</a>
+                    @if (!category.IsArchived)
+                    {
+                        <a class="btn btn-warning" asp-action="ArchiveCategory" asp-route-id="@category.Id" onclick="return confirm('Are you sure you want to archive this category?')">Archive</a>
+                        
+                    }
+                    else
+                    {
+                        <a class="btn btn-success" asp-action="UnarchiveCategory" asp-route-id="@category.Id" onclick="return confirm('Are you sure you want to restore this category?')">Unarchive</a>
+                    }
+                    
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

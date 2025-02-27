@@ -51,11 +51,7 @@
         {
             return View(); // No need to check authentication, the [Authorize] attribute already ensures it
         }
-        public IActionResult Management()
-        {
-            var users = _userManager.Users.ToList(); // Get all users
-            return View(users);
-        }
+        
         public IActionResult Pos(int reservationId)
         {
              ViewBag.ReservationId = reservationId;
@@ -69,36 +65,27 @@
         return View(bookings);
     }
 
-    public IActionResult Menu()
-        {
-            var dish = _context.Menus.ToList();
-            return View(dish); 
-        }
-        public IActionResult AddMenu()
-        {
-            return View();
-        }
-        //public IActionResult CreateDish()
-        //{
-        //    return View();
-        //}
-        [HttpPost]
+    
+
+   
+    [HttpPost]
     public IActionResult CreateDish(MenuViewModel vm)
     {
         string stringFileName = UploadFile(vm);
         var dish = new Menu
         {
             Name = vm.Name,
-            Category = vm.Category,
+            CategoryId = vm.CategoryId, // Ensure ViewModel has CategoryId
             Description = vm.Description,
             Price = vm.Price,
             ImageBase64 = stringFileName
-
         };
+
         _context.Menus.Add(dish);
         _context.SaveChanges();
         return RedirectToAction("Menu");
     }
+
 
     private string UploadFile(MenuViewModel vm)
     {
@@ -116,14 +103,7 @@
         return fileName;
     }
 
-    public IActionResult Settings()
-        {
-            return View(); // No need to check authentication, the [Authorize] attribute already ensures it
-        }
-        public IActionResult Table()
-        {
-            return View(); // No need to check authentication, the [Authorize] attribute already ensures it
-        }
+   
         public IActionResult Transaction()
         {
         var transactions = _context.Transactions.ToList();
@@ -154,7 +134,7 @@
     public IActionResult GetTransactionDetails(int id)
     {
         var transaction = _context.Transactions
-            .Include(t => t.TransactionDetail)
+            .Include(t => t.TransactionDetails)
             .ThenInclude(td => td.MenuItem)
             .FirstOrDefault(t => t.TransactionId == id);
 
@@ -163,7 +143,7 @@
             return Json(new { success = false, message = "Transaction not found" });
         }
 
-        var transactionDetails = transaction.TransactionDetail.Select(td => new
+        var transactionDetails = transaction.TransactionDetails.Select(td => new
         {
             ItemName = td.MenuItem.Name,
             Quantity = td.Quantity,

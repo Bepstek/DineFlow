@@ -1,0 +1,28 @@
+﻿@model dineflow.Models.Category
+
+@{
+    ViewData["Title"] = "EditCategory";
+}
+
+<h1>EditCategory</h1>
+
+<h4>Category</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="EditCategory" method="post">
+            <input type="hidden" name="Id" value="@Model.Id">
+            <div class="form-group">
+                <label for="Name">Category Name</label>
+                <input type="text" name="Name" class="form-control" value="@Model.Name" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </form>
+
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace dineflow.Controllers
 {
-    
+    [Authorize]
     public class AppRolesController : Controller
     {
         private readonly RoleManager<IdentityRole> _roleManager;

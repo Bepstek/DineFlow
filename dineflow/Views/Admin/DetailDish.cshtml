@@ -1,0 +1,57 @@
+﻿@model dineflow.Models.Menu
+
+@{
+    ViewData["Title"] = "DetailDish";
+}
+
+<h1>DetailDish</h1>
+
+<div>
+    <h4>Menu</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Category)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Category.Name)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Price)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Price)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ImageBase64)
+        </dt>
+        <dd class = "col-sm-10">
+            @if (!string.IsNullOrEmpty(Model.ImageBase64))
+            {
+                <img src="~/dishimage/@Model.ImageBase64" class="rounded-circle" width="300" height="300" asp-append-version="true" />
+            }
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.IsArchived)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.IsArchived)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="EditDish" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Menu">Back to List</a>
+</div>

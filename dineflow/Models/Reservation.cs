@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace dineflow.Models
 {
@@ -23,6 +24,6 @@ namespace dineflow.Models
         [Required]
         public DateTime DateTime { get; set; }
 
-        public DateTime ReservedDate { get; set; }
+        public DateTime ReservedDate { get; set; } = DateTime.Now;
     }
 }

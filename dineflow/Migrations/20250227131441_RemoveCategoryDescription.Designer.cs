@@ -12,8 +12,8 @@ using dineflow.Data;
 namespace dineflow.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250226155537_AddMenuItemRelation")]
-    partial class AddMenuItemRelation
+    [Migration("20250227131441_RemoveCategoryDescription")]
+    partial class RemoveCategoryDescription
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -236,6 +236,27 @@ namespace dineflow.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("dineflow.Models.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Categories");
+                });
+
             modelBuilder.Entity("dineflow.Models.Menu", b =>
                 {
                     b.Property<int>("Id")
@@ -244,9 +265,8 @@ namespace dineflow.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -267,6 +287,8 @@ namespace dineflow.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
 
                     b.ToTable("Menus");
                 });
@@ -316,7 +338,7 @@ namespace dineflow.Migrations
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("ReservationId")
+                    b.Property<int?>("ReservationId")
                         .HasColumnType("int");
 
                     b.Property<string>("Status")
@@ -439,6 +461,17 @@ namespace dineflow.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("dineflow.Models.Menu", b =>
+                {
+                    b.HasOne("dineflow.Models.Category", "Category")
+                        .WithMany("Menus")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+                });
+
             modelBuilder.Entity("dineflow.Models.TransactionDetail", b =>
                 {
                     b.HasOne("dineflow.Models.Menu", "MenuItem")
@@ -448,7 +481,7 @@ namespace dineflow.Migrations
                         .IsRequired();
 
                     b.HasOne("dineflow.Models.Transaction", "Transaction")
-                        .WithMany("TransactionDetail")
+                        .WithMany("TransactionDetails")
                         .HasForeignKey("TransactionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -458,9 +491,14 @@ namespace dineflow.Migrations
                     b.Navigation("Transaction");
                 });
 
+            modelBuilder.Entity("dineflow.Models.Category", b =>
+                {
+                    b.Navigation("Menus");
+                });
+
             modelBuilder.Entity("dineflow.Models.Transaction", b =>
                 {
-                    b.Navigation("TransactionDetail");
+                    b.Navigation("TransactionDetails");
                 });
 #pragma warning restore 612, 618
         }

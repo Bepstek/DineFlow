@@ -55,21 +55,18 @@ namespace dineflow.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Menus",
+                name: "Categories",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Category = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    ImageBase64 = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsArchived = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Menus", x => x.Id);
+                    table.PrimaryKey("PK_Categories", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -96,7 +93,7 @@ namespace dineflow.Migrations
                 {
                     TransactionId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ReservationId = table.Column<int>(type: "int", nullable: false),
+                    ReservationId = table.Column<int>(type: "int", nullable: true),
                     TableId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     OrderDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -215,6 +212,30 @@ namespace dineflow.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Menus",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CategoryId = table.Column<int>(type: "int", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    ImageBase64 = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsArchived = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Menus", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Menus_Categories_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "Categories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TransactionDetails",
                 columns: table => new
                 {
@@ -229,6 +250,12 @@ namespace dineflow.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_TransactionDetails", x => x.TransactionDetailsId);
+                    table.ForeignKey(
+                        name: "FK_TransactionDetails_Menus_MenuItemId",
+                        column: x => x.MenuItemId,
+                        principalTable: "Menus",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_TransactionDetails_Transactions_TransactionId",
                         column: x => x.TransactionId,
@@ -277,6 +304,16 @@ namespace dineflow.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Menus_CategoryId",
+                table: "Menus",
+                column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TransactionDetails_MenuItemId",
+                table: "TransactionDetails",
+                column: "MenuItemId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TransactionDetails_TransactionId",
                 table: "TransactionDetails",
                 column: "TransactionId");
@@ -301,9 +338,6 @@ namespace dineflow.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Menus");
-
-            migrationBuilder.DropTable(
                 name: "Reservations");
 
             migrationBuilder.DropTable(
@@ -316,7 +350,13 @@ namespace dineflow.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
+                name: "Menus");
+
+            migrationBuilder.DropTable(
                 name: "Transactions");
+
+            migrationBuilder.DropTable(
+                name: "Categories");
         }
     }
 }
