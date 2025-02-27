@@ -61,12 +61,16 @@
     <div class="container-fluid">
         <div class="row">
             <div class="mb-3">
-                <button class="btn btn-secondary btn-sm" onclick="filterProducts('All')">All</button>
-                <button class="btn btn-secondary btn-sm" onclick="filterProducts('Breakfast')">Breakfast</button>
-                <button class="btn btn-secondary btn-sm" onclick="filterProducts('Lunch')">Lunch</button>
-                <button class="btn btn-secondary btn-sm" onclick="filterProducts('Dinner')">Dinner</button>
-                <button class="btn btn-secondary btn-sm" onclick="filterProducts('Dessert')">Dessert</button>
+                <div class="d-flex gap-2 overflow-auto" style="white-space: nowrap; overflow-x: auto;">
+                    <button class="btn btn-secondary btn-sm" onclick="filterProducts('All')">All</button>
+                    @foreach (var category in ViewBag.Categories as List<string>)
+                    {
+                        <button class="btn btn-secondary btn-sm" onclick="filterProducts('@category')">@category</button>
+                    }
+                </div>
             </div>
+
+
 
             <!-- Product Section -->
             <div class="col-md-8">
@@ -74,7 +78,7 @@
                 <div class="row g-2" id="product-list">
                     @foreach (var product in Model)
                     {
-                        <div class="col-md-2 product-item" data-category="@product.Category">
+                        <div class="col-md-2 product-item" data-category="@product.Category.Name">
                             <div class="product-card p-2">
                                 <img src="~/dishimage/@product.ImageBase64" alt="@product.Name">
                                 <h5>@product.Name</h5>
@@ -219,11 +223,16 @@
         .catch(error => console.error("Error:", error));
     }
 
-    function filterProducts(category) {
+        function filterProducts(category) {
         document.querySelectorAll('.product-item').forEach(item => {
-            item.style.display = category === 'All' || item.getAttribute('data-category') === category ? "block" : "none";
+            if (category === 'All' || item.getAttribute('data-category') === category) {
+                item.style.display = "flex"; // Use flex instead of block
+            } else {
+                item.style.display = "none";
+            }
         });
     }
+
 
     updateCart();
 </script>

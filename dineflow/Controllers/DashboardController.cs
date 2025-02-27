@@ -51,13 +51,31 @@
         {
             return View(); // No need to check authentication, the [Authorize] attribute already ensures it
         }
-        
-        public IActionResult Pos(int reservationId)
-        {
-             ViewBag.ReservationId = reservationId;
-            var menuItems = _context.Menus.ToList(); // Fetch data from the database
-            return View(menuItems); // Pass data to the view
-        }
+
+    public IActionResult Pos(int reservationId)
+    {
+        ViewBag.ReservationId = reservationId;
+
+        // Fetch menu items where IsArchive is false and the related category is not archived
+        var menuItems = _context.Menus
+            .Include(m => m.Category)
+            .Where(m => !m.IsArchived && m.Category != null && !m.Category.IsArchived)
+            .ToList();
+
+        // Fetch unique categories where IsArchive is false
+        var categories = _context.Categories
+            .Where(c => !c.IsArchived)
+            .Select(c => c.Name)
+            .Distinct()
+            .ToList();
+
+        // Pass both menu items and categories to the view
+        ViewBag.Categories = categories;
+
+        return View(menuItems);
+    }
+
+
 
     public async Task<IActionResult> Reservation()
     {

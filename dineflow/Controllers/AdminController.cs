@@ -212,9 +212,19 @@ namespace dineflow.Controllers
         }
         public IActionResult Categories()
         {
-            var categories = _context.Categories.ToList(); // Fetch all categories
-            return View(categories);
+            var categories = _context.Categories
+                .Select(c => new CategoryViewModel
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    IsArchived = c.IsArchived,
+                    DishCount = _context.Menus.Count(m => m.CategoryId == c.Id && !m.IsArchived) // Count only active dishes
+                })
+                .ToList();
+
+            return View(categories); // Pass as a strongly-typed model instead of ViewBag
         }
+
 
         public IActionResult CreateCategory()
         {

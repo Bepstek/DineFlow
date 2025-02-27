@@ -1,5 +1,4 @@
-﻿
-@model List<dineflow.Models.Category>
+﻿@model List<dineflow.ViewModel.CategoryViewModel>
 
 @{
     ViewData["Title"] = "Manage Categories";
@@ -7,10 +6,12 @@
 
 <h2>Manage Categories</h2>
 <a class="btn btn-success mb-3" asp-action="CreateCategory">Add New Category</a>
+
 <table class="table table-bordered">
     <thead>
         <tr>
             <th>Name</th>
+            <th>Dishes</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -19,20 +20,36 @@
         {
             <tr>
                 <td>@category.Name</td>
+                <td>@category.DishCount</td> <!-- Display dish count -->
                 <td>
                     <a class="btn btn-primary" asp-action="EditCategory" asp-route-id="@category.Id">Edit</a>
+
                     @if (!category.IsArchived)
                     {
-                        <a class="btn btn-warning" asp-action="ArchiveCategory" asp-route-id="@category.Id" onclick="return confirm('Are you sure you want to archive this category?')">Archive</a>
-                        
+                        <a class="btn btn-warning"
+                           asp-action="ArchiveCategory"
+                           asp-route-id="@category.Id"
+                           onclick="return confirmArchive(@category.DishCount)">
+                            Archive
+                        </a>
                     }
                     else
                     {
-                        <a class="btn btn-success" asp-action="UnarchiveCategory" asp-route-id="@category.Id" onclick="return confirm('Are you sure you want to restore this category?')">Unarchive</a>
+                        <a class="btn btn-success"
+                           asp-action="UnarchiveCategory"
+                           asp-route-id="@category.Id"
+                           onclick="return confirm('Are you sure you want to restore this category?')">
+                            Unarchive
+                        </a>
                     }
-                    
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+<script>
+    function confirmArchive(dishCount) {
+        return confirm(`Are you sure you want to archive this category? ${dishCount} dishes use this category.`);
+    }
+</script>
