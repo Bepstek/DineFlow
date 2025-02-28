@@ -1,6 +1,7 @@
 ﻿using dineflow.Data;
 using dineflow.Models;
 using dineflow.ViewModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace dineflow.Controllers
 {
+    [Authorize(Roles ="Admin")]
     public class AdminController : Controller
     {
 
@@ -27,9 +29,10 @@ namespace dineflow.Controllers
         }
         public IActionResult Management()
         {
-            var users = _userManager.Users.ToList(); // Get all users
+            var users = _userManager.Users.OfType<ApplicationUser>().ToList(); // Ensure type matching
             return View(users);
         }
+
         public IActionResult Table()
         {
             return View(); 

@@ -150,7 +150,7 @@ namespace dineflow.Areas.Identity.Pages.Account
 
                 user.Firstname = Input.Firstname;
                 user.Lastname = Input.Lastname;
-
+                user.Status = "Active";
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
                 if (result.Succeeded)

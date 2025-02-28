@@ -1,0 +1,135 @@
+﻿@model IEnumerable<dineflow.Models.Transaction>
+
+@{
+    ViewData["Title"] = "Kitchen Monitor";
+    var preparingOrders = Model.Where(t => t.Status == "Preparing").ToList();
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex align-items-center">
+            <a asp-controller="Admin" asp-action="Settings">
+                <i class="lni lni-arrow-left mx-5"></i>
+            </a>
+            <h3 class="text-primary mb-0"><i class="lni lni-restaurant"></i> Kitchen Monitor</h3>
+        </div>
+        <h4 class="text-secondary">Orders: <span class="badge bg-dark">@preparingOrders.Count</span></h4>
+    </div>
+    <hr>
+
+    <!-- Scrollable Order List -->
+    <div class="scrollable-container">
+        <div class="row">
+            @foreach (var item in preparingOrders)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-lg">
+                        <div class="card-header bg-dark text-white text-center">
+                            <h5 class="mb-0">Order #@item.TransactionId</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Table:</strong> @item.TableId</p>
+                            <p><strong>Order Date:</strong> @item.OrderDate.ToString("yyyy-MM-dd HH:mm:ss")</p>
+                            <p><strong>Status:</strong> <span class="badge bg-info">@item.Status</span></p>
+                            <hr>
+                            <h6>Items:</h6>
+                            <ul class="list-group">
+                                @foreach (var detail in item.TransactionDetails)
+                                {
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>@detail.MenuItem.Name</span>
+                                        <span class="badge bg-primary rounded-pill">x @detail.Quantity</span>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                        <div class="card-footer text-center">
+                            <a class="btn btn-warning btn-sm update-status"
+                               asp-action="ServingOrder"
+                               asp-route-id="@item.TransactionId"
+                               onclick="event.preventDefault(); handleConfirmation(this, @item.TransactionId);">
+                                <i class="lni lni-checkmark-circle"></i> Done Preparing
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Scrollable Order List */
+    .scrollable-container {
+        max-height: 80vh; /* Adjust as needed */
+        overflow-y: auto;
+        padding-right: 10px;
+    }
+
+        .scrollable-container::-webkit-scrollbar {
+            width: 8px; /* Set scrollbar width */
+        }
+
+        .scrollable-container::-webkit-scrollbar-track {
+            background: #f1f1f1; /* Light grey background */
+            border-radius: 10px;
+        }
+
+        .scrollable-container::-webkit-scrollbar-thumb {
+            background: #888; /* Darker grey scrollbar */
+            border-radius: 10px;
+        }
+
+            .scrollable-container::-webkit-scrollbar-thumb:hover {
+                background: #555; /* Even darker on hover */
+            }
+</style>
+
+
+<script>
+    function confirmArchive(orderid) {
+        return new Promise((resolve) => {
+            // Check if confirmation box already exists
+            if (document.getElementById("confirmDiv")) return;
+
+            // Create confirmation div
+            let confirmDiv = document.createElement("div");
+            confirmDiv.id = "confirmDiv";
+            confirmDiv.style.position = "fixed";
+            confirmDiv.style.top = "50%";
+            confirmDiv.style.left = "50%";
+            confirmDiv.style.transform = "translate(-50%, -50%)";
+            confirmDiv.style.background = "white";
+            confirmDiv.style.padding = "20px";
+            confirmDiv.style.border = "1px solid black";
+            confirmDiv.style.boxShadow = "0px 4px 6px rgba(0,0,0,0.1)";
+            confirmDiv.style.zIndex = "1000";
+            confirmDiv.innerHTML = `
+                <p style="text-align:center; font-size:18px;">Are all food items in order #${orderid} ready to be served?</p>
+                <div style="text-align:center;">
+                    <button id="confirmYes" class="btn btn-success">Yes</button>
+                    <button id="confirmNo" class="btn btn-danger">No</button>
+                </div>
+            `;
+            document.body.appendChild(confirmDiv);
+
+            // Handle button clicks
+            document.getElementById("confirmYes").onclick = function () {
+                document.body.removeChild(confirmDiv);
+                resolve(true);
+            };
+            document.getElementById("confirmNo").onclick = function () {
+                document.body.removeChild(confirmDiv);
+                resolve(false);
+            };
+        });
+    }
+
+    async function handleConfirmation(button, orderid) {
+        const confirmed = await confirmArchive(orderid);
+        if (confirmed) {
+            window.location.href = button.href;
+        }
+    }
+
+</script>

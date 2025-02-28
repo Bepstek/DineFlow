@@ -1,0 +1,147 @@
+﻿@model IEnumerable<dineflow.Models.Transaction>
+
+@{
+    ViewData["Title"] = "Orders";
+    var preparingOrders = Model.Where(t => t.Status == "Preparing").ToList();
+    var servingOrders = Model.Where(t => t.Status == "Serving").ToList();
+}
+
+<div class="container mt-4">
+    <h2 class="text-center text-primary"><i class="lni lni-restaurant"></i> Kitchen Orders</h2>
+    <hr>
+
+    <div class="row">
+        <!-- Left Side: Preparing Orders -->
+        <div class="col-md-6">
+            <h4 class="text-warning text-center">Preparing Orders <span id="preparingCount" class="badge bg-dark">@preparingOrders.Count</span></h4>
+            <div class="scrollable-container" id="preparingOrders">
+                @if (!preparingOrders.Any())
+                {
+                    <p class="text-center text-muted">No orders currently being prepared.</p>
+                }
+                <div class="row row-cols-1 row-cols-md-3 g-2">
+                    @foreach (var order in preparingOrders)
+                    {
+                        <div class="col">
+                            <div class="card shadow-sm">
+                                <div class="card-body text-center">
+                                    <h5 class="mb-1">Order #@order.TransactionId</h5>
+                                    <span class="badge bg-warning">@order.Status</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Serving Orders -->
+        <div class="col-md-6">
+            <h4 class="text-success text-center">Serving Orders <span id="servingCount" class="badge bg-dark">@servingOrders.Count</span></h4>
+            <div class="scrollable-container" id="servingOrders">
+                @if (!servingOrders.Any())
+                {
+                    <p class="text-center text-muted">No orders currently being served.</p>
+                }
+                <div class="row row-cols-1 row-cols-md-3 g-2">
+                    @foreach (var order in servingOrders)
+                    {
+                        <div class="col">
+                            <div class="card shadow-sm">
+                                <div class="card-body text-center">
+                                    <h5 class="mb-1">Order #@order.TransactionId</h5>
+                                    <span class="badge bg-success">@order.Status</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom Styles -->
+<style>
+    .scrollable-container {
+        max-height: 75vh;
+        overflow-y: auto;
+        padding-right: 10px;
+    }
+
+        /* Scrollbar Styling */
+        .scrollable-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .scrollable-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .scrollable-container::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+            .scrollable-container::-webkit-scrollbar-thumb:hover {
+                background: #555;
+            }
+</style>
+
+<!-- jQuery (Ensure it's loaded before your script) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    function loadOrders() {
+        $.ajax({
+            url: '@Url.Action("FetchOrders", "Orders")',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                let preparingHtml = "";
+                let servingHtml = "";
+                let preparingCount = 0;
+                let servingCount = 0;
+
+                data.forEach(order => {
+                    let cardHtml = `
+                        <div class="col-md-4">
+                            <div class="card mb-2 shadow-sm text-center">
+                                <div class="card-body">
+                                    <h5 class="mb-1">Order #${order.TransactionId}</h5>
+                                    <span class="badge ${order.Status === 'Preparing' ? 'bg-warning' : 'bg-success'}">${order.Status}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    if (order.Status === "Preparing") {
+                        preparingHtml += cardHtml;
+                        preparingCount++;
+                    } else if (order.Status === "Serving") {
+                        servingHtml += cardHtml;
+                        servingCount++;
+                    }
+                });
+
+                // Update Order Lists
+                $("#preparingOrders").html(`<div class="row">${preparingHtml}</div>`);
+                $("#servingOrders").html(`<div class="row">${servingHtml}</div>`);
+
+                // Update Order Counts
+                $("#preparingCount").text(preparingCount);
+                $("#servingCount").text(servingCount);
+            },
+            error: function () {
+                console.log("Failed to load orders.");
+            }
+        });
+    }
+
+    // Load orders every 5 seconds
+    $(document).ready(function () {
+        loadOrders();
+        setInterval(loadOrders, 5000);
+    });
+</script>

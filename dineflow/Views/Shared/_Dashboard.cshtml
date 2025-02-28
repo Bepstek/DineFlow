@@ -10,11 +10,11 @@
     <link rel="stylesheet" href="~/css/navbar.css" asp-append-version="true" />
 </head>
 <body>
-    <div class="container-fluid p-0 d-flex ">
+    <div class="container-fluid p-0 d-flex">
         <aside id="sidebar">
             <div class="d-flex">
                 <button class="toggle-btn" type="button">
-                    <i><img src="~/img/logo.png" alt="Logo" style="height: 60px; width: auto; margin-right:30px"></i>
+                    <img src="~/img/logo.png" alt="Logo" style="height: 60px; width: auto; margin-right:30px">
                 </button>
                 <div class="sidebar-logo">
                     <a href="#">DineFlow</a>
@@ -35,15 +35,15 @@
                 </li>
                 <li class="sidebar-item">
                     <a class="sidebar-link" asp-area="" asp-controller="Dashboard" asp-action="Reservation">
-                        <i class="lni lni-cart"></i>
+                        <i class="lni lni-calendar"></i>
                         <span>Reservation</span>
                     </a>
-                </li
+                </li>
                 <li class="sidebar-item">
-                   <a class="sidebar-link" asp-area="" asp-controller="Dashboard" asp-action="Transaction">
-                                <i class="lni lni-revenue"></i>
-                                <span>Trasaction</span>
-                   </a>
+                    <a class="sidebar-link" asp-area="" asp-controller="Dashboard" asp-action="Transaction">
+                        <i class="lni lni-stats-up"></i>
+                        <span>Transaction</span>
+                    </a>
                 </li>
                 <li class="sidebar-item">
                     <a class="sidebar-link" asp-area="" asp-controller="Dashboard" asp-action="Inventory">
@@ -53,43 +53,68 @@
                 </li>
                 <li class="sidebar-item">
                     <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
-                       data-bs-target="#admin-dropdown" aria-expanded="false" aria-controls="admin-dropdown">
-                        <i class="lni lni-cog"></i>
-                        <span>Admin</span>
+                       data-bs-target="#admin-monitor" aria-expanded="false" aria-controls="admin-monitor">
+                        <i class="lni lni-display"></i>
+                        <span>Monitors</span>
                     </a>
-                    <ul id="admin-dropdown" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                    <ul id="admin-monitor" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
                         <li class="sidebar-item">
-                            <a class="sidebar-link" asp-area="" asp-controller="Admin" asp-action="Management">
-                                <i class="lni lni-users"></i>
-                                Management
+                            <a class="sidebar-link" asp-area="" asp-controller="Monitors" asp-action="Kitchen" target="_blank">
+                                <i class="lni lni-dinner"></i>
+                                Kitchen
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a class="sidebar-link" asp-area="" asp-controller="Admin" asp-action="Table">
-                                <i class="lni lni-grid-alt"></i>
-                                Table
+                            <a class="sidebar-link" asp-area="" asp-controller="Monitors" asp-action="Orders">
+                                <i class="lni lni-library"></i>
+                                Orders
                             </a>
                         </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link" asp-area="" asp-controller="Admin" asp-action="Menu">
-                                <i class="lni lni-package"></i>
-                                Menu
-                            </a>
-                        </li>
-                       
-                        <li class="sidebar-item">
-                            <a class="sidebar-link" asp-area="" asp-controller="Admin" asp-action="Settings">
-                                <i class="lni lni-cog"></i>
-                                Settings
-                            </a>
-                        </li>
-                       
-                    </ul>
+                    </ul
+                    >
                 </li>
+
+                @if (User.IsInRole("Admin"))
+                {
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
+                           data-bs-target="#admin-dropdown" aria-expanded="false" aria-controls="admin-dropdown">
+                            <i class="lni lni-cog"></i>
+                            <span>Admin</span>
+                        </a>
+                        <ul id="admin-dropdown" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                            <li class="sidebar-item">
+                                <a class="sidebar-link" asp-area="" asp-controller="Admin" asp-action="Management">
+                                    <i class="lni lni-users"></i>
+                                    Management
+                                </a>
+                            </li>
+                            <li class="sidebar-item">
+                                <a class="sidebar-link" asp-area="" asp-controller="Admin" asp-action="Table">
+                                    <i class="lni lni-grid-alt"></i>
+                                    Table
+                                </a>
+                            </li>
+                            <li class="sidebar-item">
+                                <a class="sidebar-link" asp-area="" asp-controller="Admin" asp-action="Menu">
+                                    <i class="lni lni-package"></i>
+                                    Menu
+                                </a>
+                            </li>
+                            <li class="sidebar-item">
+                                <a class="sidebar-link" asp-area="" asp-controller="Admin" asp-action="Settings">
+                                    <i class="lni lni-cog"></i>
+                                    Settings
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                }
             </ul>
+
             <div class="sidebar-footer">
                 <a class="sidebar-link" asp-area="Identity" asp-page="/Account/Manage/Index">
-                    <i class="lni lni-user"></i> <!-- Change to lni-user if lni-person is not working -->
+                    <i class="lni lni-user"></i>
                     <span>@User.Identity?.Name</span>
                 </a>
             </div>
@@ -99,7 +124,8 @@
                     <i class="lni lni-exit"></i>
                     <span>Logout</span>
                 </a>
-                <form id="logoutForm" method="post" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" style="display: none;">
+                <form id="logoutForm" method="post" asp-area="Identity" asp-page="/Account/Logout"
+                      asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" style="display: none;">
                     <button type="submit"></button>
                 </form>
             </div>
@@ -107,8 +133,6 @@
 
         <div class="bg-light flex-fill">
             <div class="p-1">
-                
-
                 <div class="row">
                     <div>
                         @RenderBody()
@@ -117,18 +141,17 @@
             </div>
         </div>
     </div>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
+            crossorigin="anonymous"></script>
+
+    <script>
+        document.querySelector(".toggle-btn").addEventListener("click", function () {
+            document.querySelector("#sidebar").classList.toggle("expand");
+        });
+    </script>
 </body>
-@await RenderSectionAsync("Scripts", required: false)
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
-        crossorigin="anonymous"></script>
-@* <script src="~/js/script.js" asp-append-version="true"></script> *@
-
-<script>
-    const hamBurger = document.querySelector(".toggle-btn");
-
-    hamBurger.addEventListener("click", function () {
-        document.querySelector("#sidebar").classList.toggle("expand");
-    });
-</script>
 </html>

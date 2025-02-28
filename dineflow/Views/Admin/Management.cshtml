@@ -1,14 +1,12 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@model List<IdentityUser>
+@model List<dineflow.Models.ApplicationUser>
 
 @{
     ViewData["Title"] = "User List";
 }
 <p>
-    <a asp-area="Identity" asp-page="/Account/Register">Add User</a> | <a asp-controller="Dashboard" asp-action="Role">Roles</a>
+    <a asp-area="Identity" asp-page="/Account/Register">Add User</a> | <a asp-controller="Admin" asp-action="Roles">Roles</a>
 </p>
-
-
 
 <div class="main p-6">
     <h2>All Users</h2>
@@ -17,7 +15,8 @@
         <thead>
             <tr>
                 <th>Email</th>
-                <th>Username</th>
+                <th>Full Name</th>
+                <th>Status</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -26,7 +25,8 @@
             {
                 <tr>
                     <td>@user.Email</td>
-                    <td>@user.UserName</td>
+                    <td>@user.Firstname @user.Lastname</td>
+                    <td>@user.Status</td>
                     <td>
                         <a class="btn btn-primary" asp-controller="Dashboard" asp-action="Details" asp-route-id="@user.Id">View</a>
                     </td>
