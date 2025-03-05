@@ -1,17 +1,78 @@
-﻿@{
+﻿@model dineflow.Models.DashboardViewModel
+
+@{
     ViewData["Title"] = "Dashboard";
 }
+<div class="main"> 
+<h2>Dashboard</h2>
 
-<div class="main p-6">
-    <h2>Welcome to the Dashboard!</h2>
-    <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
-            Hello @User.Identity?.Name!
-        </a>
-    </li>
-    <li class="nav-item">
-        <form method="post" class="sidebar-link" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-            <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
-        </form>
-    </li>
+<div class="row">
+    <!-- Total Reservations -->
+    <div class="col-md-3">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-header">Total Reservations</div>
+            <div class="card-body">
+                <h3>@Model.TotalReservations</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Transactions -->
+    <div class="col-md-3">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-header">Total Transactions</div>
+            <div class="card-body">
+                <h3>@Model.TotalTransactions</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Orders -->
+    <div class="col-md-3">
+        <div class="card text-white bg-danger mb-3">
+            <div class="card-header">Pending Orders</div>
+            <div class="card-body">
+                <h3>@Model.PendingOrders</h3>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- Sales Report -->
+<div class="row">
+    <!-- Total Revenue -->
+    <div class="col-md-3">
+        <div class="card text-white bg-dark mb-3">
+            <div class="card-header">Total Revenue</div>
+            <div class="card-body">
+                <h3>₱@Model.TotalRevenue.ToString("N2")</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Today's Sales -->
+    <div class="col-md-3">
+        <div class="card text-white bg-info mb-3">
+            <div class="card-header">Today's Sales</div>
+            <div class="card-body">
+                <h3>₱@Model.TodaySales.ToString("N2")</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Monthly Sales -->
+    <div class="col-md-3">
+        <div class="card text-white bg-warning mb-3">
+            <div class="card-header">This Month's Sales</div>
+            <div class="card-body">
+                <h3>₱@Model.MonthlySales.ToString("N2")</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Yearly Sales -->
+    
+</div>
+
+
+

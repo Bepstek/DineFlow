@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Versioning;
 
 namespace dineflow.Controllers
 {
@@ -32,6 +33,16 @@ namespace dineflow.Controllers
             var users = _userManager.Users.OfType<ApplicationUser>().ToList(); // Ensure type matching
             return View(users);
         }
+        public async Task<IActionResult> UsersDetail(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return View(user);
+        }
+
 
         public IActionResult Table()
         {
@@ -326,8 +337,44 @@ namespace dineflow.Controllers
             _context.SaveChanges();
             return RedirectToAction("Categories");
         }
+        [HttpPost]
+        public async Task<IActionResult> ArchiveUser(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id) as ApplicationUser;
+            if (user == null)
+            {
+                return NotFound();
+            }
 
-        
+           
+            user.LockoutEnd = DateTime.UtcNow.AddYears(100);
+
+            // ✅ Update Status to "Deactivated"
+            user.Status = "Deactivated";
+
+            await _userManager.UpdateAsync(user);
+
+            return RedirectToAction("Management");
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> UnarchiveUser(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id) as ApplicationUser;
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            
+            user.LockoutEnd = null;
+            user.Status = "Active";
+            await _userManager.UpdateAsync(user);
+
+            return RedirectToAction("Management");
+        }
+
 
     }
 }

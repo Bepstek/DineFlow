@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-
+using dineflow.Services;
 namespace dineflow.Controllers
 {
     public class HomeController : Controller
@@ -13,11 +13,13 @@ namespace dineflow.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDbContext _context; // Inject database context
         private readonly RoleManager<IdentityRole> _roleManager;
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, RoleManager<IdentityRole> roleManager)
+        private readonly EmailService _emailService;
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, RoleManager<IdentityRole> roleManager,EmailService emailService)
         {
             _logger = logger;
             _context = context;
             _roleManager = roleManager;
+            _emailService = emailService;
         }
         public IActionResult Role()
         {
@@ -69,11 +71,11 @@ namespace dineflow.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-    
+
         public async Task<IActionResult> SubmitBooking(Reservation reservation)
         {
             if (ModelState.IsValid)
-            {   
+            {
                 var newReservation = new Reservation
                 {
                     Name = reservation.Name,
@@ -81,15 +83,34 @@ namespace dineflow.Controllers
                     PhoneNumber = reservation.PhoneNumber,
                     NumberOfPeople = reservation.NumberOfPeople,
                     ReservedDate = reservation.ReservedDate,
-                    DateTime = DateTime.Now,
+                    DateTime = DateTime.Now
                 };
 
                 _context.Reservations.Add(newReservation);
                 await _context.SaveChangesAsync();
+
+                // Send Confirmation Email
+                string subject = "DineFlow Reservation Confirmation";
+                string message = $@"
+                Dear {reservation.Name},<br><br>
+                Thank you for your reservation at <b>DineFlow</b>!<br><br>
+                <b>Reservation Details:</b><br>
+                - Name: {reservation.Name}<br>
+                - Email: {reservation.Email}<br>
+                - Phone: {reservation.PhoneNumber}<br>
+                - Date & Time: {reservation.ReservedDate}<br>
+                - Number of People: {reservation.NumberOfPeople}<br><br>
+                We look forward to serving you!<br><br>
+                Regards,<br>
+                <b>DineFlow Team</b>
+            ";
+
+                await _emailService.SendEmailAsync(reservation.Email, subject, message);
+
                 return RedirectToAction("Booking");
             }
 
-            return View("Booking", reservation); // Return view with validation messages if invalid
+            return View("Booking", reservation);
         }
 
 

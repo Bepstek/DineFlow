@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using dineflow.Data;
 
@@ -11,9 +12,11 @@ using dineflow.Data;
 namespace dineflow.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250304045052_UpdateTransactionTable1")]
+    partial class UpdateTransactionTable1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -253,61 +256,6 @@ namespace dineflow.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("dineflow.Models.Inventory", b =>
-                {
-                    b.Property<int>("InventoryId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("InventoryId"));
-
-                    b.Property<DateTime>("DateOfInventory")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("InventoryId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Inventories");
-                });
-
-            modelBuilder.Entity("dineflow.Models.InventoryDetails", b =>
-                {
-                    b.Property<int>("InventoryDetailsId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("InventoryDetailsId"));
-
-                    b.Property<int>("InventoryId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ItemName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UnitOfMeasure")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("InventoryDetailsId");
-
-                    b.HasIndex("InventoryId");
-
-                    b.ToTable("InventoryDetails");
-                });
-
             modelBuilder.Entity("dineflow.Models.Menu", b =>
                 {
                     b.Property<int>("Id")
@@ -516,28 +464,6 @@ namespace dineflow.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("dineflow.Models.Inventory", b =>
-                {
-                    b.HasOne("dineflow.Models.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("dineflow.Models.InventoryDetails", b =>
-                {
-                    b.HasOne("dineflow.Models.Inventory", "Inventory")
-                        .WithMany("InventoryDetails")
-                        .HasForeignKey("InventoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Inventory");
-                });
-
             modelBuilder.Entity("dineflow.Models.Menu", b =>
                 {
                     b.HasOne("dineflow.Models.Category", "Category")
@@ -571,11 +497,6 @@ namespace dineflow.Migrations
             modelBuilder.Entity("dineflow.Models.Category", b =>
                 {
                     b.Navigation("Menus");
-                });
-
-            modelBuilder.Entity("dineflow.Models.Inventory", b =>
-                {
-                    b.Navigation("InventoryDetails");
                 });
 
             modelBuilder.Entity("dineflow.Models.Transaction", b =>

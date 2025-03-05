@@ -21,11 +21,12 @@ namespace dineflow.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
-
-        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger)
+        private readonly UserManager<IdentityUser> _userManager;
+        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger,UserManager<IdentityUser> _usermanager)
         {
             _signInManager = signInManager;
             _logger = logger;
+            _userManager = _usermanager;
         }
 
         /// <summary>

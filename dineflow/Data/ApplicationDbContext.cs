@@ -19,8 +19,9 @@
             public DbSet<TransactionDetail> TransactionDetails { get; set; }
             public DbSet<Reservation> Reservations { get; set; }
             public DbSet<ApplicationUser> ApplicationUsers { get; set; }
-
-            protected override void OnModelCreating(ModelBuilder modelBuilder)
+            public DbSet<Inventory> Inventories { get; set; }
+            public DbSet<InventoryDetails> InventoryDetails { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
             {
                 base.OnModelCreating(modelBuilder);
 
@@ -43,7 +44,16 @@
                     .WithMany(t => t.TransactionDetails)
                     .HasForeignKey(td => td.TransactionId);
 
-                modelBuilder.Entity<IdentityUserLogin<string>>().HasKey(l => new { l.LoginProvider, l.ProviderKey });
+                modelBuilder.Entity<InventoryDetails>()
+                    .HasOne(id => id.Inventory)
+                    .WithMany(i => i.InventoryDetails)
+                    .HasForeignKey(id => id.InventoryId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                  
+
+            modelBuilder.Entity<IdentityUserLogin<string>>().HasKey(l => new { l.LoginProvider, l.ProviderKey });
+
             }
             
         }

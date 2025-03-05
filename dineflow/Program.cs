@@ -1,5 +1,6 @@
 using dineflow.Data;
 using dineflow.Models;
+using dineflow.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,6 +19,7 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<IdentityUser>().AddDefaultTokenProviders()
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddScoped<EmailService>();
 
 
 // Configure Cookie Authentication and Redirection After Login

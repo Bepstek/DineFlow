@@ -1,14 +1,18 @@
 ﻿    using System.Net;
-    using dineflow.Controllers;
-    using dineflow.Data;
+using dineflow.Controllers;
+using dineflow.Data;
+using System.Security.Claims;
+
     using dineflow.Models;
     using dineflow.ViewModel;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;    
+    using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography.X509Certificates;
+using Azure.Core;
 
-    [Authorize] // Ensure only authenticated users can access
+[Authorize] // Ensure only authenticated users can access
     public class DashboardController : Controller
     {
         private readonly ILogger<DashboardController> _logger;
@@ -44,13 +48,41 @@
             return RedirectToAction("Index");
         }
     public IActionResult Index()
+    {
+        var today = DateTime.Today;
+        var currentMonth = today.Month;
+        var currentYear = today.Year;
+
+        var dashboardData = new DashboardViewModel
         {
-            return View(); 
-        }
-        public IActionResult Inventory()
+            TotalReservations = _context.Reservations.Count(),
+            TotalTransactions = _context.Transactions.Count(),
+            PendingOrders = _context.Transactions.Count(o => o.Status == "Preparing"),
+            TotalRevenue = _context.Transactions.Sum(t => (decimal?)t.TotalAmount) ?? 0,
+            TodaySales = _context.Transactions
+                .Where(t => t.OrderDate.Date == today)
+                .Sum(t => (decimal?)t.TotalAmount) ?? 0,
+            MonthlySales = _context.Transactions
+                .Where(t => t.OrderDate.Month == currentMonth && t.OrderDate.Year == currentYear)
+                .Sum(t => (decimal?)t.TotalAmount) ?? 0,
+            YearlySales = _context.Transactions
+                .Where(t => t.OrderDate.Year == currentYear)
+                .Sum(t => (decimal?)t.TotalAmount) ?? 0
+        };
+
+        return View(dashboardData);
+    }
+    public IActionResult Inventory()
         {
-            return View(); // No need to check authentication, the [Authorize] attribute already ensures it
-        }
+        var Inventory = _context.Inventories
+          .OrderByDescending(t => t.DateOfInventory)
+          .ToList();
+
+        return View(Inventory);
+    }
+    
+
+
 
     public IActionResult Pos(int reservationId)
     {
@@ -79,7 +111,8 @@
 
     public async Task<IActionResult> Reservation()
     {
-        var bookings = await _context.Reservations.ToListAsync();
+        var bookings = await _context.Reservations.OrderByDescending(r => r.Id).ToListAsync(); 
+        
         return View(bookings);
     }
 
@@ -121,12 +154,15 @@
         return fileName;
     }
 
-   
-        public IActionResult Transaction()
-        {
-        var transactions = _context.Transactions.ToList();
-        return View(transactions); 
-        }
+
+    public IActionResult Transaction()
+    {
+        var transactions = _context.Transactions
+            .OrderByDescending(t => t.TransactionId) // Sorting by TransactionId in descending order
+            .ToList();
+
+        return View(transactions);
+    }
 
     public async Task<IActionResult> TransactionDetails(int? id)
     {
@@ -175,7 +211,7 @@
                 transaction.TransactionId,
                 transaction.UserId,
                 transaction.OrderDate,
-                transaction.TableId,
+                transaction.OrderId,
                 transaction.TotalAmount,
                 transaction.Status
             },
@@ -211,7 +247,7 @@
                 t.TransactionId,
                 t.UserId,
                 t.OrderDate,
-                t.TableId,
+                t.OrderId,
                 t.TotalAmount,
                 t.Status
             })
@@ -229,7 +265,7 @@
             }
             return View(user);
         }
-
     
+
 
 }

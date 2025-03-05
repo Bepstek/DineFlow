@@ -1,4 +1,6 @@
-﻿@{
+﻿@model dineflow.Models.Reservation
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
@@ -14,7 +16,7 @@
         <a class="navbar-brand d-flex align-items-center p-0" asp-area="" asp-controller="Home" asp-action="Index">
             <img src="~/img/logo.png" alt="Logo" style="height: 80px; width: auto; margin-right: 10px;">
             <h1 class="text-primary m-0"><i ></i>DineFlow</h1>
-        </a>
+        </a>    
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
             <span class="fa fa-bars"></span>. J
@@ -500,24 +502,12 @@
             <div class="p-5 wow fadeInUp" data-wow-delay="0.2s">
                 <h5 class="section-title ff-secondary text-start text-primary fw-normal">Reservation</h5>
                 <h1 class="text-white mb-4">Book A Table Online</h1>
-                <form>
+                <form asp-action="SubmitBooking" method="post">
                     <div class="row g-3">
                         <div class="col-md-6">
                             <div class="form-floating">
                                 <input type="text" class="form-control" id="name" placeholder="Your Name">
                                 <label for="name">Your Name</label>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-floating">
-                                <input type="email" class="form-control" id="email" placeholder="Your Email">
-                                <label for="email">Your Email</label>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-floating date" id="date3" data-target-input="nearest">
-                                <input type="text" class="form-control datetimepicker-input" id="datetime" placeholder="Date & Time" data-target="#date3" data-toggle="datetimepicker" />
-                                <label for="datetime">Date & Time</label>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -530,10 +520,22 @@
                                 <label for="select1">No Of People</label>
                             </div>
                         </div>
-                        <div class="col-12">
+                        <div class="col-md-6">
                             <div class="form-floating">
-                                <textarea class="form-control" placeholder="Special Request" id="message" style="height: 100px"></textarea>
-                                <label for="message">Special Request</label>
+                                <input type="email" class="form-control" id="email" placeholder="Your Email">
+                                <label for="email">Your Email</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input asp-for="PhoneNumber" class="form-control" id="phone" placeholder="Your Phone Number" required>
+                                <label for="phone">Your Phone Number</label>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-floating date" id="date3" data-target-input="nearest">
+                                <input type="text" class="form-control datetimepicker-input" id="datetime" placeholder="Date & Time" data-target="#date3" data-toggle="datetimepicker" />
+                                <label for="datetime">Date & Time</label>
                             </div>
                         </div>
                         <div class="col-12">

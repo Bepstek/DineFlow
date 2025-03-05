@@ -17,6 +17,7 @@
         }
 
     .order-details {
+       
         background-color: white;
         padding: 20px;
         border-radius: 10px;
@@ -39,6 +40,9 @@
     }
 
     .cart-table {
+
+        
+        overflow-y: auto;
         width: 100%;
         border-collapse: collapse;
     }
@@ -94,20 +98,23 @@
             <div class="col-md-4 mt-5 d-flex flex-column">
                 <div class="order-details">
                     <h4>Order Details</h4>
-                    <table class="cart-table">
-                        <thead>
-                            <tr>
-                                <th>Item</th>
-                                <th>Qty</th>
-                                <th>Price</th>
-                                <th>Remove</th>
-                            </tr>
-                        </thead>
-                        <tbody id="cart-items"></tbody>
-                    </table>
+                    <div class="cart-container" style="min-height:300px;max-height:300px; overflow-y:auto;">
+                        <!-- Added wrapper for scrollable cart -->
+                        <table class="cart-table">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Qty</th>
+                                    <th>Price</th>
+                                    <th>Remove</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cart-items"></tbody>
+                        </table>
+                    </div>
                     <div class="order-footer">
-                        <h4>Total: ₱<span id="total">0</span></h4>
-                        <div class="mb-2">Table: <input type="number" class="form-control" id="table-input"></div>
+                        <h4>Total: <span style="margin-right: 200px"></span>₱<span id="total">0</span></h4>
+                       <div class="mb-2">Table: <input type="number" class="form-control" id="table-input"></div>
                         <div class="mb-2">Cash: <input type="number" class="form-control" id="cash-input" oninput="calculateChange()"></div>
                         <div class="mb-2">Change: ₱<span id="change">0.00</span></div>
                         <input type="hidden" id="reservation-id" value="@ViewBag.ReservationId">
@@ -162,7 +169,7 @@
             total += item.price * item.quantity;
             cartItems.innerHTML += `
                 <tr>
-                    <td>${item.name}</td>
+                    <td style="max-width:100px;"><p>${item.name}s</p></td>
                     <td>
                         <button class="btn btn-sm btn-secondary quantity-btn" onclick="changeQuantity(${item.menuitemid}, -1)">-</button>
                         ${item.quantity}
@@ -188,40 +195,40 @@
         localStorage.setItem('cart', JSON.stringify(cart));
     }
 
-    function checkout() {
-        if (cart.length === 0) {
-            alert("Cart is empty!");
-            return;
+        function checkout() {
+            if (cart.length === 0) {
+                alert("Cart is empty!");
+                return;
+            }
+
+            const orderData = {
+                reservationId: document.getElementById("reservation-id").value ? parseInt(document.getElementById("reservation-id").value) : null,
+                tableId: parseInt(document.getElementById("table-input").value) || null,
+                userId: 1,
+                status:  "Preparing",
+                cart: cart
+
+            };
+
+            fetch('/Orders/Checkout', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(orderData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(`Order placed! Transaction ID: ${data.transactionId}`);
+                cart = [];
+                saveCart();
+                updateCart();
+                 const url = new URL(window.location.href);
+            url.searchParams.delete('reservationId');
+            window.location.href = url.toString();
+            })
+            .catch(error => console.error("Error:", error));
         }
-
-        const orderData = {
-            reservationId: document.getElementById("reservation-id").value ? parseInt(document.getElementById("reservation-id").value) : null,
-            tableId: parseInt(document.getElementById("table-input").value) || null,
-            userId: 1,
-            status:  "Preparing",
-            cart: cart
-
-        };
-
-        fetch('/Orders/Checkout', {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(orderData)
-        })
-        .then(response => response.json())
-        .then(data => {
-            alert(`Order placed! Transaction ID: ${data.transactionId}`);
-            cart = [];
-            saveCart();
-            updateCart();
-             const url = new URL(window.location.href);
-        url.searchParams.delete('reservationId');
-        window.location.href = url.toString();
-        })
-        .catch(error => console.error("Error:", error));
-    }
 
         function filterProducts(category) {
         document.querySelectorAll('.product-item').forEach(item => {

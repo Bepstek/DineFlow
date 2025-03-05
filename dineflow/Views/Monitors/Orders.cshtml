@@ -24,9 +24,13 @@
                     {
                         <div class="col">
                             <div class="card shadow-sm">
+                                <div class="card-header bg-warning text-black text-center">
+                                    <span class="badge bg-warning text-black">@order.Status</span>
+                                </div>
                                 <div class="card-body text-center">
-                                    <h5 class="mb-1">Order #@order.TransactionId</h5>
-                                    <span class="badge bg-warning">@order.Status</span>
+                                    
+                                    <h5 class="mb-1">@order.OrderId</h5>
+                                   
                                 </div>
                             </div>
                         </div>
@@ -48,9 +52,12 @@
                     {
                         <div class="col">
                             <div class="card shadow-sm">
+                                <div class="card-header bg-success text-black text-center">
+                                    <span class="badge bg-success">Now @order.Status</span>
+                                </div>
                                 <div class="card-body text-center">
-                                    <h5 class="mb-1">Order #@order.TransactionId</h5>
-                                    <span class="badge bg-success">@order.Status</span>
+                                    <h5 class="mb-0">@order.OrderId</h5>
+                                    
                                 </div>
                             </div>
                         </div>

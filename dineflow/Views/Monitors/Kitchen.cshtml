@@ -25,10 +25,10 @@
                 <div class="col-md-4 mb-4">
                     <div class="card shadow-lg">
                         <div class="card-header bg-dark text-white text-center">
-                            <h5 class="mb-0">Order #@item.TransactionId</h5>
+                            <h5 class="mb-0">Order: @item.OrderId</h5>
                         </div>
                         <div class="card-body">
-                            <p><strong>Table:</strong> @item.TableId</p>
+                            
                             <p><strong>Order Date:</strong> @item.OrderDate.ToString("yyyy-MM-dd HH:mm:ss")</p>
                             <p><strong>Status:</strong> <span class="badge bg-info">@item.Status</span></p>
                             <hr>

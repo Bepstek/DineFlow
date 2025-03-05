@@ -1,15 +1,88 @@
-﻿
+﻿@model IEnumerable<dineflow.Models.Inventory>
+
 @{
-}<div class="main p-6">
-	<h2>Welcome to the Inventory!</h2>
-    <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
-            Hello @User.Identity?.Name!
-        </a>
-    </li>
-    <li class="nav-item">
-        <form method="post" class="sidebar-link" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-            <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
-        </form>
-    </li>
+    ViewData["Title"] = "Inventory";
+}
+
+<div class="main p-4">
+    <div class="row">
+        <div class="col-md-8">
+            <h3 class="mb-4">Transaction Records</h3>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Date of Inventory</th>
+                            <th>User</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.DateOfInventory.ToString("yyyy-MM-dd")</td>
+                                <td>@item.UserId</td>
+                                <td>
+                                    <button class="btn btn-primary view-details" data-id="@item.InventoryId">Details</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <h3 class="mb-4">Inventory Details</h3>
+            <div class="table-responsive">
+                <table class="table table-bordered" id="detailsTable">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Item Name</th>
+                            <th>Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody id="detailsBody">
+                        <tr>
+                            <td colspan="2" class="text-center">Click "Details" to view inventory items</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- jQuery Script for AJAX -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".view-details").click(function () {
+            var inventoryId = $(this).data("id");
+
+            $.ajax({
+                url: "/Inventory/GetInventoryDetails",
+                type: "GET",
+                data: { id: inventoryId },
+                success: function (response) {
+                    if (response.success) {
+                        var detailsHtml = "";
+                        response.data.forEach(function (detail) {
+                            detailsHtml += `<tr>
+                                <td>${detail.name}</td>
+                                <td>${detail.quantity}</td>
+                            </tr>`;
+                        });
+                        $("#detailsBody").html(detailsHtml);
+                    } else {
+                        $("#detailsBody").html(`<tr><td colspan="2" class="text-center">${response.message}</td></tr>`);
+                    }
+                },
+                error: function () {
+                    $("#detailsBody").html(`<tr><td colspan="2" class="text-center text-danger">Error fetching data.</td></tr>`);
+                }
+            });
+        });
+    });
+</script>

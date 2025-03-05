@@ -31,7 +31,7 @@
                 <th>
                     @Html.DisplayNameFor(model => model.ReservedDate)
                 </th>
-                <th></th>
+                <th> Action</th>
             </tr>
         </thead>
         <tbody>
@@ -57,9 +57,7 @@
                         @Html.DisplayFor(modelItem => item.ReservedDate)
                     </td>
                     <td>
-                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> |
+                        
                         <a href="javascript:void(0);" onclick="redirectToPOS(@item.Id)">Served</a>
 
                     </td>

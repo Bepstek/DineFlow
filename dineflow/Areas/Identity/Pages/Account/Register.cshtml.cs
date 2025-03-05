@@ -94,6 +94,9 @@ namespace dineflow.Areas.Identity.Pages.Account
             [Display(Name = "Email")]
             public string Email { get; set; }
 
+            [Required]
+            [Display(Name = "PhoneNumber")]
+            public string PhoneNumber { get; set; }
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
@@ -150,6 +153,7 @@ namespace dineflow.Areas.Identity.Pages.Account
 
                 user.Firstname = Input.Firstname;
                 user.Lastname = Input.Lastname;
+                user.PhoneNumber = Input.PhoneNumber;
                 user.Status = "Active";
                 var result = await _userManager.CreateAsync(user, Input.Password);
 

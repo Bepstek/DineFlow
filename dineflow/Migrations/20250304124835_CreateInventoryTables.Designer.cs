@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using dineflow.Data;
 
@@ -11,9 +12,11 @@ using dineflow.Data;
 namespace dineflow.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250304124835_CreateInventoryTables")]
+    partial class CreateInventoryTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -264,10 +267,6 @@ namespace dineflow.Migrations
                     b.Property<DateTime>("DateOfInventory")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -290,20 +289,17 @@ namespace dineflow.Migrations
                     b.Property<int>("InventoryId")
                         .HasColumnType("int");
 
-                    b.Property<string>("ItemName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("MenuItemId")
+                        .HasColumnType("int");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<string>("UnitOfMeasure")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("InventoryDetailsId");
 
                     b.HasIndex("InventoryId");
+
+                    b.HasIndex("MenuItemId");
 
                     b.ToTable("InventoryDetails");
                 });
@@ -535,7 +531,15 @@ namespace dineflow.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("dineflow.Models.Menu", "MenuItem")
+                        .WithMany()
+                        .HasForeignKey("MenuItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Inventory");
+
+                    b.Navigation("MenuItem");
                 });
 
             modelBuilder.Entity("dineflow.Models.Menu", b =>

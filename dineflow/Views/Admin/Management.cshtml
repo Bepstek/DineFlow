@@ -14,9 +14,12 @@
     <table class="table table-bordered">
         <thead>
             <tr>
+              
+                <th>Last Name</th>
+                <th>First Name</th>
                 <th>Email</th>
-                <th>Full Name</th>
-                <th>Status</th>
+                <th>Phone Number</th>
+                 <th>Status</th> 
                 <th>Actions</th>
             </tr>
         </thead>
@@ -24,14 +27,42 @@
             @foreach (var user in Model)
             {
                 <tr>
+                    <td>@user.Lastname</td>
+                    <td>@user.Firstname</td>
                     <td>@user.Email</td>
-                    <td>@user.Firstname @user.Lastname</td>
+                    <td>@user.PhoneNumber</td>
                     <td>@user.Status</td>
                     <td>
-                        <a class="btn btn-primary" asp-controller="Dashboard" asp-action="Details" asp-route-id="@user.Id">View</a>
+                        @if (user.LockoutEnd.HasValue && user.LockoutEnd > DateTime.UtcNow)
+                        {
+                            <!-- Unarchive Form -->
+                            <form asp-action="UnarchiveUser" method="post" style="display:inline;">
+                                <input type="hidden" name="id" value="@user.Id" />
+                                <button type="submit" class="btn btn-success" onclick="return confirm('Are you sure you want to restore this User?')">
+                                    Activate
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <!-- Archive Form -->
+                            <form asp-action="ArchiveUser" method="post" style="display:inline;">
+                                <input type="hidden" name="id" value="@user.Id" />
+                                <button type="submit" class="btn btn-warning" onclick="return confirmArchive('@user.Lastname', '@user.Firstname')">
+                                    Deactivated
+                                </button>
+                            </form>
+                        }
+                       
                     </td>
                 </tr>
             }
+
         </tbody>
     </table>
 </div>
+<script>
+    function confirmArchive(last,first) {
+        return confirm(`Are you sure you want to archive this User? ${last}, ${first}.`);
+    }
+</script>

@@ -10,11 +10,13 @@ namespace dineflow.Models
         public int TransactionId { get; set; }
 
         public int? ReservationId { get; set; } // Allow null for walk-in customers
+
         public int TableId { get; set; }
+        public string OrderId { get; set; }
         public int UserId { get; set; }
         public DateTime OrderDate { get; set; }
 
-        [Range(0, double.MaxValue)]
+        [Range(0, double.MaxValue)] 
         public decimal TotalAmount { get; set; }
 
         public string Status { get; set; } // Enum as string
