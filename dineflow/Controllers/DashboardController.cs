@@ -12,6 +12,7 @@ using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using Azure.Core;
 using static dineflow.Controllers.OrdersController;
+using System.Globalization;
 
 [Authorize] // Ensure only authenticated users can access
     public class DashboardController : Controller
@@ -48,30 +49,70 @@ using static dineflow.Controllers.OrdersController;
             }
             return RedirectToAction("Index");
         }
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
         var today = DateTime.Today;
         var currentMonth = today.Month;
         var currentYear = today.Year;
 
+        // Fetch data from the database
         var dashboardData = new DashboardViewModel
         {
-            TotalReservations = _context.Reservations.Count(),
-            TotalTransactions = _context.Transactions.Count(),
-            PendingOrders = _context.Transactions.Count(o => o.Status == "Preparing"),
-            TotalRevenue = _context.Transactions.Sum(t => (decimal?)t.TotalAmount) ?? 0,
-            TodaySales = _context.Transactions
+            TotalMenu = await _context.Menus.CountAsync(),
+            TodaySales = await _context.Transactions
                 .Where(t => t.OrderDate.Date == today)
-                .Sum(t => (decimal?)t.TotalAmount) ?? 0,
-            MonthlySales = _context.Transactions
-                .Where(t => t.OrderDate.Month == currentMonth && t.OrderDate.Year == currentYear)
-                .Sum(t => (decimal?)t.TotalAmount) ?? 0,
-            YearlySales = _context.Transactions
-                .Where(t => t.OrderDate.Year == currentYear)
-                .Sum(t => (decimal?)t.TotalAmount) ?? 0
+                .SumAsync(t => (decimal?)t.TotalAmount) ?? 0,
+            TotalRevenue = await _context.Transactions
+                .SumAsync(t => (decimal?)t.TotalAmount) ?? 0,
+            TotalTransactions = await _context.Transactions.CountAsync(),
+            OrderSummary = await GetTopSellingDishesAsync(5), // Fetch top 5 most selling dishes
+            RevenueChartLabels = await GetRevenueChartLabelsAsync(), // Fetch labels for the revenue chart
+            RevenueChartData = await GetRevenueChartDataAsync() // Fetch data for the revenue chart
         };
 
         return View(dashboardData);
+    }
+
+    private async Task<List<OrderSummaryItem>> GetTopSellingDishesAsync(int topCount)
+    {
+        var topDishes = await _context.TransactionDetails
+            .GroupBy(oi => oi.MenuItem.Name)
+            .Select(g => new
+            {
+                Category = g.Key,
+                TotalSales = g.Sum(oi => oi.Quantity)
+            })
+            .OrderByDescending(g => g.TotalSales)
+            .Take(topCount)
+            .ToListAsync();
+
+        var totalSales = topDishes.Sum(d => d.TotalSales);
+
+        return topDishes.Select(d => new OrderSummaryItem
+        {
+            Category = d.Category,
+            Percentage = totalSales > 0 ? Math.Round((d.TotalSales / (decimal)totalSales) * 100, 2) : 0
+        }).ToList();
+    }
+
+    // Helper method to get revenue chart labels (e.g., months)
+    private async Task<List<string>> GetRevenueChartLabelsAsync()
+    {
+        return await _context.Transactions
+            .GroupBy(t => t.OrderDate.Month)
+            .OrderBy(g => g.Key)
+            .Select(g => CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(g.Key))
+            .ToListAsync();
+    }
+
+    // Helper method to get revenue chart data (e.g., monthly revenue)
+    private async Task<List<decimal>> GetRevenueChartDataAsync()
+    {
+        return await _context.Transactions
+            .GroupBy(t => t.OrderDate.Month)
+            .OrderBy(g => g.Key)
+            .Select(g => g.Sum(t => t.TotalAmount))
+            .ToListAsync();
     }
     public IActionResult Inventory()
     {
