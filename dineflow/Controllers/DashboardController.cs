@@ -80,7 +80,7 @@ using Azure.Core;
 
         return View(Inventory);
     }
-    
+
 
 
 
