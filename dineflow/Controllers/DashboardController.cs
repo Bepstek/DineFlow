@@ -11,6 +11,7 @@ using System.Security.Claims;
     using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography.X509Certificates;
 using Azure.Core;
+using static dineflow.Controllers.OrdersController;
 
 [Authorize] // Ensure only authenticated users can access
     public class DashboardController : Controller
@@ -73,15 +74,16 @@ using Azure.Core;
         return View(dashboardData);
     }
     public IActionResult Inventory()
-        {
-        var Inventory = _context.Inventories
-          .OrderByDescending(t => t.DateOfInventory)
-          .ToList();
+    {
+        var inventoryList = _context.Inventories
+            .Include(i => i.User) // <-- Ensure User data is loaded
+            .OrderByDescending(t => t.DateOfInventory)
+            .ToList();
 
-        return View(Inventory);
+        return View(inventoryList);
     }
-    
 
+    
 
 
     public IActionResult Pos(int reservationId)
@@ -184,41 +186,64 @@ using Azure.Core;
 
         return View(transactionDetails);
     }
-    [HttpGet]
-    public IActionResult GetTransactionDetails(int id)
+[HttpGet]
+public async Task<IActionResult> GetTransactionDetails(int id)
+{
+    try
     {
-        var transaction = _context.Transactions
-            .Include(t => t.TransactionDetails)
-            .ThenInclude(td => td.MenuItem)
-            .FirstOrDefault(t => t.TransactionId == id);
+        var transaction = await _context.Transactions
+            .Include(t => t.TransactionDetails) // Include transaction details
+            .ThenInclude(td => td.MenuItem) // Include menu item details
+            .FirstOrDefaultAsync(t => t.TransactionId == id);
 
         if (transaction == null)
         {
-            return Json(new { success = false, message = "Transaction not found" });
+            return NotFound(new { message = "Transaction not found." });
         }
 
-        var transactionDetails = transaction.TransactionDetails.Select(td => new
+        var transactionDetails = new
         {
-            ItemName = td.MenuItem.Name,
-            Quantity = td.Quantity,
-            Price = td.Price
-        }).ToList();
-
-        return Json(new
-        {
-            Transaction = new
+            TransactionId = transaction.TransactionId,
+            Items = transaction.TransactionDetails.Select(td => new
             {
-                transaction.TransactionId,
-                transaction.UserId,
-                transaction.OrderDate,
-                transaction.OrderId,
-                transaction.TotalAmount,
-                transaction.Status
-            },
-            TransactionDetails = transactionDetails
+                ItemName = td.MenuItem?.Name,
+                Quantity = td.Quantity,
+                Price = td.Price.ToString("C"),
+                Total = td.Total.ToString("C")
+            }).ToList()
+        };
+
+        // Log the data being returned
+        Console.WriteLine("Transaction Details:", transactionDetails);
+
+        return Ok(transactionDetails);
+    }
+    catch (Exception ex)
+    {
+        return StatusCode(500, new
+        {
+            message = "An error occurred while fetching transaction details.",
+            error = ex.Message,
+            stackTrace = ex.StackTrace,
+            innerException = ex.InnerException?.Message
         });
     }
+}
 
+    public IActionResult CompleteTransaction(int id)
+    {
+        var transaction = _context.Transactions.Find(id);
+        if (transaction == null)
+        {
+            return NotFound();
+        }
+
+        transaction.Status = "Complete";
+        _context.Transactions.Update(transaction);
+        _context.SaveChanges();
+
+        return RedirectToAction("Transaction");
+    }
 
     [HttpGet]
     public async Task<IActionResult> GetFiltered(string date, string status, string searchId)

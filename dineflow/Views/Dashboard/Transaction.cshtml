@@ -31,10 +31,12 @@
                         <td>@item.TotalAmount.ToString("C")</td>
                         <td>@item.Status</td>
                         <td>
-                            <a asp-action="TransactionDetails" asp-route-id="@item.TransactionId">Details</a>
-                            @* <button class="btn btn-info btn-sm view-details" data-transactionid="@item.TransactionId" data-bs-toggle="modal" data-bs-target="#transactionModal"> *@
-                            @*     Details *@
-                            @* </button> *@
+                            <button class="btn btn-info view-details" data-id="@item.TransactionId" data-bs-toggle="modal" data-bs-target="#transactionModal">Details</button>
+                            @if (item.Status != "Complete" && item.Status != "Preparing")
+                            {
+                                <span>|</span>
+                                <a class="btn btn-warning" asp-action="CompleteTransaction" asp-route-id="@item.TransactionId">Complete</a>
+                            }
                         </td>
                     </tr>
                 }
@@ -53,11 +55,6 @@
             </div>
             <div class="modal-body">
                 <p><strong>Transaction ID:</strong> <span id="modalTransactionId"></span></p>
-                <p><strong>User:</strong> <span id="modalUserId"></span></p>
-                <p><strong>Order Date:</strong> <span id="modalOrderDate"></span></p>
-                <p><strong>Table:</strong> <span id="modalTableId"></span></p>
-                <p><strong>Total Amount:</strong> <span id="modalTotalAmount"></span></p>
-                <p><strong>Status:</strong> <span id="modalStatus"></span></p>
                 <hr>
                 <h6>Transaction Items:</h6>
                 <table class="table table-bordered">
@@ -66,11 +63,12 @@
                             <th>Item</th>
                             <th>Quantity</th>
                             <th>Price</th>
+                            <th>Total</th>
                         </tr>
                     </thead>
                     <tbody id="modalTransactionItems">
                         <tr>
-                            <td colspan="3" class="text-center">No items available</td>
+                            <td colspan="4" class="text-center">No items available</td>
                         </tr>
                     </tbody>
                 </table>
@@ -81,67 +79,51 @@
         </div>
     </div>
 </div>
-@* <script> *@
-@*         $(document).ready(function () { *@
-@*         $(".view-details").click(function () { *@
-@*             let transactionId = $(this).data("transactionid"); *@
 
-@*             $.ajax({ *@
-@*                 url: `/Dashboard/TransactionModal?id=${transactionId}`, *@
-@*                 type: "GET", *@
-@*                 success: function (data) { *@
-@*                     $("#transactionModal .modal-content").html(data); *@
-@*                     $("#transactionModal").modal("show"); *@
-@*                 }, *@
-@*                 error: function () { *@
-@*                     alert("An error occurred while fetching transaction details."); *@
-@*                 } *@
-@*             }); *@
-@*         }); *@
-@*     }); *@
+<script>
+       document.addEventListener("DOMContentLoaded", function () {
+        // Handle "Details" button click
+        document.querySelectorAll(".view-details").forEach(button => {
+            button.addEventListener("click", function () {
+                let transactionId = this.getAttribute("data-id");
+                console.log("Fetching details for Transaction ID:", transactionId);
 
-@* </script> *@
-@* <script> *@
-@*     document.addEventListener("DOMContentLoaded", function () { *@
-@*         document.querySelectorAll(".view-details").forEach(button => { *@
-@*             button.addEventListener("click", function () { *@
-@*                 let transactionId = this.getAttribute("data-transactionid"); *@
+                // Fetch transaction details
+                fetch(`/Dashboard/GetTransactionDetails?id=${transactionId}`)
+                    .then(response => {
+                        console.log("Response:", response);
+                        if (!response.ok) {
+                            throw new Error("Network response was not ok");
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log("Data:", data);
+                        // Populate modal with transaction details
+                        document.getElementById("modalTransactionId").innerText = data.transactionId;
+                        // Populate transaction items
+                        let itemsBody = document.getElementById("modalTransactionItems");
+                        itemsBody.innerHTML = ""; // Clear existing rows
 
-@*                 fetch(`/Dashboard/GetTransactionDetails?id=${transactionId}`) *@
-@*                     .then(response => response.json()) *@
-@*                     .then(data => { *@
-@*                         if (data.Transaction) { *@
-@*                             document.getElementById("modalTransactionId").textContent = data.Transaction.TransactionId; *@
-@*                             document.getElementById("modalUserId").textContent = data.Transaction.UserId; *@
-@*                             document.getElementById("modalOrderDate").textContent = new Date(data.Transaction.OrderDate).toLocaleString(); *@
-@*                             document.getElementById("modalTableId").textContent = data.Transaction.TableId; *@
-@*                             document.getElementById("modalTotalAmount").textContent = data.Transaction.TotalAmount.toFixed(2); *@
-@*                             document.getElementById("modalStatus").textContent = data.Transaction.Status; *@
-
-@*                             let itemsTable = document.getElementById("modalTransactionItems"); *@
-@*                             itemsTable.innerHTML = ""; *@
-
-@*                             if (data.TransactionDetails.length > 0) { *@
-@*                                 data.TransactionDetails.forEach(detail => { *@
-@*                                     let row = `<tr> *@
-@*                                         <td>${detail.ItemName || "Unknown Item"}</td> *@
-@*                                         <td>${detail.Quantity}</td> *@
-@*                                         <td>${detail.Price.toFixed(2)}</td> *@
-@*                                     </tr>`; *@
-@*                                     itemsTable.innerHTML += row; *@
-@*                                 }); *@
-@*                             } else { *@
-@*                                 itemsTable.innerHTML = `<tr><td colspan="3" class="text-center">No items available</td></tr>`; *@
-@*                             } *@
-@*                         } else { *@
-@*                             alert("Transaction details not found."); *@
-@*                         } *@
-@*                     }) *@
-@*                     .catch(error => { *@
-@*                         console.error("Error fetching transaction details:", error); *@
-@*                         alert("An error occurred while fetching transaction details."); *@
-@*                     }); *@
-@*             }); *@
-@*         }); *@
-@*     }); *@
-@* </script> *@
+                        if (data.items && data.items.length > 0) {
+                            data.items.forEach(item => {
+                                let newRow = itemsBody.insertRow();
+                                newRow.innerHTML = `
+                                    <td>${item.itemName}</td>
+                                    <td>${item.quantity}</td>
+                                    <td>${item.price}</td>
+                                    <td>${item.total}</td>
+                                `;
+                            });
+                        } else {
+                            itemsBody.innerHTML = `<tr><td colspan="4" class="text-center">No items available</td></tr>`;
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                        alert("An error occurred while fetching transaction details.");
+                    });
+            });
+        });
+    });
+</script>

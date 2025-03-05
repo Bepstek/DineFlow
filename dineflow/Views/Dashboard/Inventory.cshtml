@@ -1,88 +1,252 @@
-﻿@model IEnumerable<dineflow.Models.Inventory>
+﻿    @using System.Security.Claims
 
-@{
-    ViewData["Title"] = "Inventory";
-}
+    @model IEnumerable<dineflow.Models.Inventory>
 
-<div class="main p-4">
-    <div class="row">
-        <div class="col-md-8">
-            <h3 class="mb-4">Transaction Records</h3>
-            <div class="table-responsive">
-                <table class="table table-bordered">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Date of Inventory</th>
-                            <th>User</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+    @{
+        ViewData["Title"] = "Inventory";
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Get the logged-in user's ID
+    }
+
+    <div class="main p-4">
+        <div class="row">
+            <div class="col-md-8">
+                <h3 class="mb-4">Transaction Records</h3>
+                <button class="btn btn-primary insert-details"
+                        data-bs-toggle="modal" data-bs-target="#inventoryDetailsModal">
+                    Add Inventory Record
+                </button>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead class="table-dark">
+                            <tr>
+                                <th></th>
+                                <th>Date of Inventory</th>
+                                <th>User</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
                         @foreach (var item in Model)
                         {
                             <tr>
+                                <th>@item.InventoryId</th>
                                 <td>@item.DateOfInventory.ToString("yyyy-MM-dd")</td>
-                                <td>@item.UserId</td>
+                                <td>@item.User.Lastname</td>
                                 <td>
                                     <button class="btn btn-primary view-details" data-id="@item.InventoryId">Details</button>
                                 </td>
                             </tr>
                         }
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
 
-        <div class="col-md-4">
-            <h3 class="mb-4">Inventory Details</h3>
-            <div class="table-responsive">
-                <table class="table table-bordered" id="detailsTable">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Item Name</th>
-                            <th>Quantity</th>
-                        </tr>
-                    </thead>
-                    <tbody id="detailsBody">
-                        <tr>
-                            <td colspan="2" class="text-center">Click "Details" to view inventory items</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="col-md-4">
+                <h3 class="mb-4">Inventory Details</h3>
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="detailsTable">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Item Name</th>
+                                <th>Unit of Measure</th>
+                                <th>Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody id="detailsBody">
+                            <tr>
+                                <td colspan="3" class="text-center">Click "Details" to view inventory items</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- jQuery Script for AJAX -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(document).ready(function () {
-        $(".view-details").click(function () {
-            var inventoryId = $(this).data("id");
+    <!-- Inventory Details Modal -->
+    <div class="modal fade" id="inventoryDetailsModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Add Inventory Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                <form id="inventoryDetailsForm">
+                    <input type="hidden" name="userID" id="userid" value="@userId" />
 
-            $.ajax({
-                url: "/Inventory/GetInventoryDetails",
-                type: "GET",
-                data: { id: inventoryId },
-                success: function (response) {
-                    if (response.success) {
-                        var detailsHtml = "";
-                        response.data.forEach(function (detail) {
-                            detailsHtml += `<tr>
-                                <td>${detail.name}</td>
-                                <td>${detail.quantity}</td>
-                            </tr>`;
-                        });
-                        $("#detailsBody").html(detailsHtml);
-                    } else {
-                        $("#detailsBody").html(`<tr><td colspan="2" class="text-center">${response.message}</td></tr>`);
-                    }
-                },
-                error: function () {
-                    $("#detailsBody").html(`<tr><td colspan="2" class="text-center text-danger">Error fetching data.</td></tr>`);
+                    <div class="mb-3">
+                        <label for="ItemName" class="form-label">Menu Item</label>
+                        <input type="text" class="form-control" id="ItemName" name="ItemName" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="unitMeasure" class="form-label">Unit of Measure</label>
+                        <input type="text" class="form-control" id="unitMeasure" name="UnitMeasure" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="quantity" class="form-label">Quantity</label>
+                        <input type="number" class="form-control" id="quantity" name="Quantity" min="1" required>
+                    </div>
+
+                    <button type="button" class="btn btn-success" id="addItem">Add</button>
+
+                    <div class="mt-4">
+                        <table class="table table-bordered" id="itemsTable">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Menu Item</th>
+                                    <th>Unit</th>
+                                    <th>Quantity</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="text-center">
+                                    <td colspan="4">No items added</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="submitInventory">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+           document.addEventListener("DOMContentLoaded", function () {
+        // Add item to the table
+        document.getElementById("addItem").addEventListener("click", function () {
+            let itemName = document.getElementById("ItemName").value.trim();
+            let unitMeasure = document.getElementById("unitMeasure").value.trim();
+            let quantity = document.getElementById("quantity").value.trim();
+
+            if (!itemName || !unitMeasure || !quantity || quantity <= 0) {
+                alert("Please enter valid item details.");
+                return;
+            }
+
+            let tableBody = document.querySelector("#itemsTable tbody");
+
+            // Remove "No items added" row
+            if (tableBody.rows.length === 1 && tableBody.rows[0].cells.length === 1) {
+                tableBody.innerHTML = "";
+            }
+
+            let newRow = tableBody.insertRow();
+            newRow.innerHTML = `
+                <td>${itemName}</td>
+                <td>${unitMeasure}</td>
+                <td>${quantity}</td>
+                <td><button class="btn btn-danger btn-sm remove-item">Remove</button></td>
+            `;
+
+            newRow.querySelector(".remove-item").addEventListener("click", function () {
+                newRow.remove();
+                if (tableBody.rows.length === 0) {
+                    tableBody.innerHTML = `<tr class="text-center"><td colspan="4">No items added</td></tr>`;
                 }
+            });
+
+            document.getElementById("ItemName").value = "";
+            document.getElementById("unitMeasure").value = "";
+            document.getElementById("quantity").value = "";
+        });
+
+        // Submit inventory data
+        document.getElementById("submitInventory").addEventListener("click", function () {
+            let userId = document.getElementById("userid").value;
+            let items = [];
+
+            // Collect items from the table
+            let tableRows = document.querySelectorAll("#itemsTable tbody tr");
+            tableRows.forEach(row => {
+                if (row.cells.length === 4) { // Ensure it's not the "No items added" row
+                    let itemName = row.cells[0].innerText;
+                    let unitMeasure = row.cells[1].innerText;
+                    let quantity = row.cells[2].innerText;
+
+                    items.push({
+                        ItemName: itemName,
+                        UnitofMeasure: unitMeasure,
+                        Quantity: parseInt(quantity)
+                    });
+                }
+            });
+
+            if (items.length === 0) {
+                alert("Please add at least one item before submitting.");
+                return;
+            }
+
+            // Prepare the data to send to the server
+            let inventoryRequest = {
+                UserId: userId,
+                InvDetail: items
+            };
+
+            // Send the data to the server
+            fetch('/Inventory/AddInventoryRecord', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(inventoryRequest)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data.message);
+                    if (data.message === "Inventory record added successfully!") {
+                        window.location.reload(); // Reload the page to reflect the new inventory record
+                    }
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert("An error occurred while submitting the inventory record.");
+            });
+        });
+
+        // Handle "Details" button click
+        document.querySelectorAll(".view-details").forEach(button => {
+            button.addEventListener("click", function () {
+                let inventoryId = this.getAttribute("data-id");
+
+                // Fetch inventory details
+                fetch(`/Inventory/GetInventoryDetails?id=${inventoryId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        let detailsBody = document.querySelector("#detailsTable tbody");
+                        detailsBody.innerHTML = ""; // Clear existing rows
+
+                        if (data.length === 0) {
+                            detailsBody.innerHTML = `<tr><td colspan="3" class="text-center">No details found</td></tr>`;
+                        } else {
+                            data.forEach(item => {
+                                let newRow = detailsBody.insertRow();
+                                newRow.innerHTML = `
+                                    <td>${item.itemName}</td>
+                                   <td>${item.unitOfMeasure}</td>
+                                    <td>${item.quantity}</td>
+
+                                `;
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                        alert("An error occurred while fetching inventory details.");
+                    });
             });
         });
     });
-</script>
+    </script>
