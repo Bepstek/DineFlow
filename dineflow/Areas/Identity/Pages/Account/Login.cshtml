@@ -29,7 +29,7 @@
 
 
             </div>
-            <a class="btn btn-primary py-2 px-4" asp-area="" asp-controller="Home" asp-action="Booking">Book A Table</a>
+            <a class="btn btn-primary py-2 px-4" asp-area="" asp-controller="Home" asp-action="Booking">Reserve A Table</a>
         </div>
     </nav>
 
@@ -63,8 +63,9 @@
                             </div>
                             <div class="text-center mt-3">
                                 <p>
-                                    <a asp-page="./Register">asdad</a>
-                                    <a id="forgot-password" class="text-white" asp-page="./ForgotPassword">Forgot your password?</a>
+ 
+                                    <a id="forgot-password" class="text-white" asp-page="./ForgotPassword">Don't have an Account?</a>
+                                    <a asp-page="./Register">Register</a>
                                 </p>
                                 <p>
                                     <a class="text-white" asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>

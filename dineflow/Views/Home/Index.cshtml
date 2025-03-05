@@ -15,7 +15,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 px-lg-5 py-3 py-lg-0">
         <a class="navbar-brand d-flex align-items-center p-0" asp-area="" asp-controller="Home" asp-action="Index">
             <img src="~/img/logo.png" alt="Logo" style="height: 80px; width: auto; margin-right: 10px;">
-            <h1 class="text-primary m-0"><i ></i>DineFlow</h1>
+            <h1 class="text-primary m-0"><i></i>DineFlow</h1>
         </a>    
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
@@ -27,10 +27,10 @@
                 <a class="nav-item nav-link" asp-area="" asp-controller="Home" asp-action="About">About</a>
                 <a class="nav-item nav-link" asp-area="" asp-controller="Home" asp-action="Service">Service</a>
                 <a class="nav-item nav-link" asp-area="" asp-controller="Home" asp-action="Menu">Menu</a>
-                <a class="nav-item nav-link" asp-area="" asp-controller="Home" asp-action="Role">ASdasdasd</a>
+                <a class="nav-item nav-link" asp-area="" asp-controller="Home" asp-action="Role">Roles(Temporary)</a>
                 
             </div>
-            <a class="btn btn-primary py-2 px-4" asp-area="" asp-controller="Home" asp-action="Booking">Book A Table</a>
+            <a class="btn btn-primary py-2 px-4" asp-area="" asp-controller="Home" asp-action="Booking">Reserve A Table</a>
         </div>
     </nav>
 
@@ -40,7 +40,7 @@
                 <div class="col-lg-6 text-center text-lg-start">
                     <h1 class="display-3 text-white animated slideInLeft">Enjoy Our<br>Delicious Meal</h1>
                     <p class="text-white animated slideInLeft mb-4 pb-2">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit. Aliqu diam amet diam et eos. Clita erat ipsum et lorem et sit, sed stet lorem sit clita duo justo magna dolore erat amet</p>
-                    <a class="btn btn-primary py-sm-3 px-sm-5 me-3 animated slideInLeft" asp-area="" asp-controller="Home" asp-action="Booking">Book A Table</a>
+                    <a class="btn btn-primary py-sm-3 px-sm-5 me-3 animated slideInLeft" asp-area="" asp-controller="Home" asp-action="Booking">Reserve A Table</a>
                 </div>
                 <div class="col-lg-6 text-center text-lg-end overflow-hidden">
                     <img class="img-fluid" src="img/hero.png" alt="">
@@ -493,9 +493,6 @@
     <div class="row g-0">
         <div class="col-md-6">
             <div class="video">
-                <button type="button" class="btn-play" data-bs-toggle="modal" data-src="https://www.youtube.com/embed/DWRcNpR6Kdc" data-bs-target="#videoModal">
-                    <span></span>
-                </button>
             </div>
         </div>
         <div class="col-md-6 bg-dark d-flex align-items-center">
@@ -548,23 +545,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="videoModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content rounded-0">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Youtube Video</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <!-- 16:9 aspect ratio -->
-                <div class="ratio ratio-16x9">
-                    <iframe class="embed-responsive-item" src="" id="video" allowfullscreen allowscriptaccess="always"
-                            allow="autoplay"></iframe>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+
 <!-- Reservation Start -->
 <!-- Team Start -->
 <div class="container-xxl pt-5 pb-3">
@@ -577,7 +558,7 @@
             <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
                 <div class="team-item text-center rounded overflow-hidden">
                     <div class="rounded-circle overflow-hidden m-4">
-                        <img class="img-fluid" src="img/team-1.jpg" alt="">
+                        <img class="img-fluid" src="~/img/TwiceJeongyeon.jpg" alt="">
                     </div>
                     <h5 class="mb-0">Full Name</h5>
                     <small>Designation</small>
@@ -591,7 +572,7 @@
             <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
                 <div class="team-item text-center rounded overflow-hidden">
                     <div class="rounded-circle overflow-hidden m-4">
-                        <img class="img-fluid" src="img/team-2.jpg" alt="">
+                        <img class="img-fluid" src="~/img/TwiceMina.jpg" alt="">
                     </div>
                     <h5 class="mb-0">Full Name</h5>
                     <small>Designation</small>
@@ -605,7 +586,7 @@
             <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
                 <div class="team-item text-center rounded overflow-hidden">
                     <div class="rounded-circle overflow-hidden m-4">
-                        <img class="img-fluid" src="img/team-3.jpg" alt="">
+                        <img class="img-fluid" src="~/img/TwiceNaeyon.jpg" alt="">
                     </div>
                     <h5 class="mb-0">Full Name</h5>
                     <small>Designation</small>
@@ -619,7 +600,7 @@
             <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.7s">
                 <div class="team-item text-center rounded overflow-hidden">
                     <div class="rounded-circle overflow-hidden m-4">
-                        <img class="img-fluid" src="img/team-4.jpg" alt="">
+                        <img class="img-fluid" src="~/img/TwiceDahyun.jpg" alt="">
                     </div>
                     <h5 class="mb-0">Full Name</h5>
                     <small>Designation</small>
@@ -635,57 +616,4 @@
 </div>
 <!-- Team End -->
 <!-- Testimonial Start -->
-<div class="container-xxl py-5 wow fadeInUp" data-wow-delay="0.1s">
-    <div class="container">
-        <div class="text-center">
-            <h5 class="section-title ff-secondary text-center text-primary fw-normal">Testimonial</h5>
-            <h1 class="mb-5">Our Clients Say!!!</h1>
-        </div>
-        <div class="owl-carousel testimonial-carousel">
-            <div class="testimonial-item bg-transparent border rounded p-4">
-                <i class="fa fa-quote-left fa-2x text-primary mb-3"></i>
-                <p>Dolor et eos labore, stet justo sed est sed. Diam sed sed dolor stet amet eirmod eos labore diam</p>
-                <div class="d-flex align-items-center">
-                    <img class="img-fluid flex-shrink-0 rounded-circle" src="img/testimonial-1.jpg" style="width: 50px; height: 50px;">
-                    <div class="ps-3">
-                        <h5 class="mb-1">Client Name</h5>
-                        <small>Profession</small>
-                    </div>
-                </div>
-            </div>
-            <div class="testimonial-item bg-transparent border rounded p-4">
-                <i class="fa fa-quote-left fa-2x text-primary mb-3"></i>
-                <p>Dolor et eos labore, stet justo sed est sed. Diam sed sed dolor stet amet eirmod eos labore diam</p>
-                <div class="d-flex align-items-center">
-                    <img class="img-fluid flex-shrink-0 rounded-circle" src="img/testimonial-2.jpg" style="width: 50px; height: 50px;">
-                    <div class="ps-3">
-                        <h5 class="mb-1">Client Name</h5>
-                        <small>Profession</small>
-                    </div>
-                </div>
-            </div>
-            <div class="testimonial-item bg-transparent border rounded p-4">
-                <i class="fa fa-quote-left fa-2x text-primary mb-3"></i>
-                <p>Dolor et eos labore, stet justo sed est sed. Diam sed sed dolor stet amet eirmod eos labore diam</p>
-                <div class="d-flex align-items-center">
-                    <img class="img-fluid flex-shrink-0 rounded-circle" src="img/testimonial-3.jpg" style="width: 50px; height: 50px;">
-                    <div class="ps-3">
-                        <h5 class="mb-1">Client Name</h5>
-                        <small>Profession</small>
-                    </div>
-                </div>
-            </div>
-            <div class="testimonial-item bg-transparent border rounded p-4">
-                <i class="fa fa-quote-left fa-2x text-primary mb-3"></i>
-                <p>Dolor et eos labore, stet justo sed est sed. Diam sed sed dolor stet amet eirmod eos labore diam</p>
-                <div class="d-flex align-items-center">
-                    <img class="img-fluid flex-shrink-0 rounded-circle" src="img/testimonial-4.jpg" style="width: 50px; height: 50px;">
-                    <div class="ps-3">
-                        <h5 class="mb-1">Client Name</h5>
-                        <small>Profession</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+

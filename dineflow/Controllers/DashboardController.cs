@@ -83,7 +83,6 @@ using static dineflow.Controllers.OrdersController;
         return View(inventoryList);
     }
 
-    
 
 
     public IActionResult Pos(int reservationId)

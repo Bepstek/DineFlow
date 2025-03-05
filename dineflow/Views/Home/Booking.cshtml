@@ -1,6 +1,8 @@
-﻿  @model dineflow.Models.Reservation  
-  @{  
-  }  
+﻿ @model dineflow.Models.Reservation  
+@{
+    ViewData["Title"] = "Reservation Page";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
   <div class="container-xxl bg-white p-0">  
       <!-- Spinner Start -->  
       <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">  
@@ -26,20 +28,20 @@
                       <a class="nav-item nav-link" asp-area="" asp-controller="Home" asp-action="Service">Service</a>  
                       <a class="nav-item nav-link" asp-area="" asp-controller="Home" asp-action="Menu">Menu</a>  
                     
-                  </div>  
-                  <a class="btn btn-primary py-2 px-4" asp-area="" asp-controller="Home" asp-action="Booking">Book A Table</a>  
-              </div>  
+                  </div>
+                <a class="btn btn-primary py-2 px-4" asp-area="" asp-controller="Home" asp-action="Booking">Reserve a Table</a>
+            </div>  
           </nav>  
 
           <div class="container-xxl py-5 bg-dark hero-header mb-5">  
-              <div class="container text-center my-5 pt-5 pb-4">  
-                  <h1 class="display-3 text-white mb-3 animated slideInDown">Booking</h1>  
-                  <nav aria-label="breadcrumb">  
+              <div class="container text-center my-5 pt-5 pb-4">
+                <h1 class="display-3 text-white mb-3 animated slideInDown">Reservation</h1>
+                <nav aria-label="breadcrumb">  
                       <ol class="breadcrumb justify-content-center text-uppercase">  
                           <li class="breadcrumb-item"><a href="#">Home</a></li>  
-                          <li class="breadcrumb-item"><a href="#">Pages</a></li>  
-                          <li class="breadcrumb-item text-white active" aria-current="page">Booking</li>  
-                      </ol>  
+                          <li class="breadcrumb-item"><a href="#">Pages</a></li>
+                        <li class="breadcrumb-item text-white active" aria-current="page">Reservation</li>
+                    </ol>  
                   </nav>  
               </div>  
           </div>  
@@ -58,7 +60,7 @@
               <div class="col-md-6 bg-dark d-flex align-items-center">  
                   <div class="p-5 wow fadeInUp" data-wow-delay="0.2s">  
                       <h5 class="section-title ff-secondary text-start text-primary fw-normal">Reservation</h5>  
-                      <h1 class="text-white mb-4">Book A Table Online</h1>  
+                      <h1 class="text-white mb-4">Reserve A Table Online</h1>  
 
                       <form asp-action="SubmitBooking" method="post">  
                           <div class="row g-3">  
@@ -98,7 +100,7 @@
                               </div>  
 
                               <div class="col-12">  
-                                  <button class="btn btn-primary w-100 py-3" type="submit">Book Now</button>  
+                                  <button class="btn btn-primary w-100 py-3" type="submit">Reserve Now</button>  
                               </div>  
                           </div>  
                       </form>  
