@@ -44,6 +44,7 @@ namespace dineflow.Controllers
         }
         public IActionResult Index()
         {
+//////SAMPLEE
             var reservation = _context.Reservations.ToList();
             // Fetch menu items where IsArchived is false and the related category is not archived
             var menuItems = _context.Menus
