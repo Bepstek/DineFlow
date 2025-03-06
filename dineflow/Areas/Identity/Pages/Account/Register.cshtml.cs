@@ -132,13 +132,16 @@ namespace dineflow.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             Input = new InputModel()
             {
-                RoleList = _roleManager.Roles.Select(x => x.Name).Select(i => new SelectListItem
-                {
-                    Text = i,
-                    Value = i
-                })
+                RoleList = _roleManager.Roles
+                    .Where(x => x.Name != "Admin") // Exclude "Admin" role
+                    .Select(i => new SelectListItem
+                    {
+                        Text = i.Name,
+                        Value = i.Name
+                    })
             };
         }
+
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {

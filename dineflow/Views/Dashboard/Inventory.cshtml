@@ -9,24 +9,31 @@
 
     <div class="main p-4">
         <div class="row">
-            <div class="col-md-8">
-                <h3 class="mb-4">Transaction Records</h3>
-                <button class="btn btn-primary insert-details"
-                        data-bs-toggle="modal" data-bs-target="#inventoryDetailsModal">
-                    Add Inventory Record
-                </button>
+        <div class="col-md-8">
+            <h3 class="mb-4">Transaction Records</h3>
 
-                <div class="table-responsive">
-                    <table class="table table-bordered">
-                        <thead class="table-dark">
-                            <tr>
-                                <th></th>
-                                <th>Date of Inventory</th>
-                                <th>User</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+            <!-- Search Bar -->
+            
+            <form method="post" asp-action="Inventory" id="searchForm">
+                <input type="text" name="search" value="@ViewBag.SearchQuery" id="searchInput" class="form-control" placeholder="Search transactions...">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+
+            <button class="btn btn-primary insert-details" data-bs-toggle="modal" data-bs-target="#inventoryDetailsModal">
+                Add Inventory Record
+            </button>
+
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th></th>
+                            <th>Date of Inventory</th>
+                            <th>User</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                         @foreach (var item in Model)
                         {
                             <tr>
@@ -38,10 +45,34 @@
                                 </td>
                             </tr>
                         }
-                        </tbody>
-                    </table>
-                </div>
+                    </tbody>
+                </table>
             </div>
+
+            <!-- Pagination -->
+            <nav>
+                <ul class="pagination">
+                    @if (ViewBag.CurrentPage > 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="?search=@ViewBag.SearchQuery&page=@(ViewBag.CurrentPage - 1)">Previous</a>
+                        </li>
+                    }
+                    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                            <a class="page-link" href="?search=@ViewBag.SearchQuery&page=@i">@i</a>
+                        </li>
+                    }
+                    @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="?search=@ViewBag.SearchQuery&page=@(ViewBag.CurrentPage + 1)">Next</a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        </div>
 
             <div class="col-md-4">
                 <h3 class="mb-4">Inventory Details</h3>
@@ -120,6 +151,8 @@
             </div>
         </div>
     </div>
+
+
 
     <script>
            document.addEventListener("DOMContentLoaded", function () {
@@ -250,3 +283,4 @@
         });
     });
     </script>
+

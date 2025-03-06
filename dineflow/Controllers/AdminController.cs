@@ -48,11 +48,27 @@ namespace dineflow.Controllers
         {
             return View(); 
         }
-        public async Task<IActionResult> Menu()
+        public async Task<IActionResult> Menu(string search, int page = 1, int pageSize = 10)
         {
-            var menuItems = await _context.Menus.Include(m => m.Category).ToListAsync();
+            var query = _context.Menus.Include(m => m.Category).AsQueryable();
+
+            // Apply search filter
+            if (!string.IsNullOrEmpty(search))
+            {
+                query = query.Where(m => m.Name.Contains(search) || m.Category.Name.Contains(search));
+            }
+
+            // Pagination
+            int totalRecords = await query.CountAsync();
+            var menuItems = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+
+            ViewBag.SearchQuery = search;
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
+
             return View(menuItems);
         }
+
 
         public IActionResult CreateDish()
         {
@@ -224,20 +240,34 @@ namespace dineflow.Controllers
             }
             return RedirectToAction("Index");
         }
-        public IActionResult Categories()
+        public IActionResult Categories(string search, int page = 1, int pageSize = 10)
         {
-            var categories = _context.Categories
+            var query = _context.Categories
                 .Select(c => new CategoryViewModel
                 {
                     Id = c.Id,
                     Name = c.Name,
                     IsArchived = c.IsArchived,
                     DishCount = _context.Menus.Count(m => m.CategoryId == c.Id && !m.IsArchived) // Count only active dishes
-                })
-                .ToList();
+                });
 
-            return View(categories); // Pass as a strongly-typed model instead of ViewBag
+            // Apply search filter
+            if (!string.IsNullOrEmpty(search))
+            {
+                query = query.Where(c => c.Name.Contains(search));
+            }
+
+            // Pagination
+            int totalRecords = query.Count();
+            var categories = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            ViewBag.SearchQuery = search;
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
+
+            return View(categories);
         }
+
 
 
         public IActionResult CreateCategory()

@@ -3,8 +3,15 @@
 @{
     ViewData["Title"] = "Manage Categories";
 }
-
+<div class="main"> 
 <h2>Manage Categories</h2>
+
+<!-- Search Form -->
+<form method="get" asp-action="Categories" id="searchForm">
+    <input type="text" name="search" value="@ViewBag.SearchQuery" class="form-control mb-3" placeholder="Search categories...">
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
 <a class="btn btn-success mb-3" asp-action="CreateCategory">Add New Category</a>
 
 <table class="table table-bordered">
@@ -20,7 +27,7 @@
         {
             <tr>
                 <td>@category.Name</td>
-                <td>@category.DishCount</td> <!-- Display dish count -->
+                <td>@category.DishCount</td>
                 <td>
                     <a class="btn btn-primary" asp-action="EditCategory" asp-route-id="@category.Id">Edit</a>
 
@@ -47,6 +54,22 @@
         }
     </tbody>
 </table>
+
+<!-- Pagination -->
+@if (ViewBag.TotalPages > 1)
+{
+    <nav>
+        <ul class="pagination">
+            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+            {
+                <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                    <a class="page-link" href="@Url.Action("Categories", new { search = ViewBag.SearchQuery, page = i })">@i</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}
+</div>
 
 <script>
     function confirmArchive(dishCount) {

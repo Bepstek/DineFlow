@@ -2,12 +2,22 @@
 
 @{
     ViewData["Title"] = "Transactions";
+    int pageNumber = ViewBag.PageNumber;
+    int pageSize = ViewBag.PageSize;
+    int totalItems = ViewBag.TotalItems;
+    int totalPages = ViewBag.TotalPages;
 }
 
 <div class="main p-4">
     <h3 class="mb-4">Transaction Records</h3>
 
-    <div class="table-responsive">
+    <!-- Search Bar -->
+    <form method="get" asp-action="Transaction">
+        <input type="text" name="searchString" value="@ViewBag.SearchString" placeholder="Search transactions..."  />
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    <div class="table-responsive mt-3">
         <table class="table table-bordered">
             <thead class="table-dark">
                 <tr>
@@ -43,6 +53,18 @@
             </tbody>
         </table>
     </div>
+
+    <!-- Pagination -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            @for (int i = 1; i <= totalPages; i++)
+            {
+                <li class="page-item @(i == pageNumber ? "active" : "")">
+                    <a class="page-link" asp-action="Transaction" asp-route-pageNumber="@i" asp-route-searchString="@ViewBag.SearchString">@i</a>
+                </li>
+            }
+        </ul>
+    </nav>
 </div>
 
 <!-- Transaction Details Modal -->

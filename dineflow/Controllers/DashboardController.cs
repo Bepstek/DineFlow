@@ -114,15 +114,33 @@ using System.Globalization;
             .Select(g => g.Sum(t => t.TotalAmount))
             .ToListAsync();
     }
-    public IActionResult Inventory()
+    public IActionResult Inventory(string search, int page = 1, int pageSize = 10)
     {
-        var inventoryList = _context.Inventories
-            .Include(i => i.User) // <-- Ensure User data is loaded
+        var query = _context.Inventories
+            .Include(i => i.User)
             .OrderByDescending(t => t.DateOfInventory)
-            .ToList();
+            .AsQueryable();
+
+        if (!string.IsNullOrEmpty(search))
+        {
+            query = query.Where(i => 
+            i.User.Lastname.Contains(search) ||
+            i.DateOfInventory.ToString().Contains(search) ||
+            i.InventoryId.ToString().Contains(search)
+            );
+        }
+
+        int totalRecords = query.Count();
+        var inventoryList = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+        ViewBag.CurrentPage = page;
+        ViewBag.TotalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
+        ViewBag.SearchQuery = search; // Ensure this matches the input field's name
 
         return View(inventoryList);
     }
+
+
 
 
 
@@ -151,16 +169,36 @@ using System.Globalization;
 
 
 
-    public async Task<IActionResult> Reservation()
+    public async Task<IActionResult> Reservation(string searchString, int pageNumber = 1, int pageSize = 10)
     {
-        var bookings = await _context.Reservations.OrderByDescending(r => r.Id).ToListAsync(); 
-        
-        return View(bookings);
+        var bookings = _context.Reservations.AsQueryable();
+
+        // Apply search filter
+        if (!string.IsNullOrEmpty(searchString))
+        {
+            bookings = bookings.Where(r => r.Name.Contains(searchString) || r.Email.Contains(searchString) || r.PhoneNumber.Contains(searchString));
+        }
+
+        // Pagination
+        int totalItems = await bookings.CountAsync();
+        var reservations = await bookings
+            .OrderByDescending(r => r.Id)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        ViewBag.SearchString = searchString;
+        ViewBag.PageNumber = pageNumber;
+        ViewBag.PageSize = pageSize;
+        ViewBag.TotalItems = totalItems;
+
+        return View(reservations);
     }
 
-    
 
-   
+
+
+
     [HttpPost]
     public IActionResult CreateDish(MenuViewModel vm)
     {
@@ -197,14 +235,39 @@ using System.Globalization;
     }
 
 
-    public IActionResult Transaction()
+    public IActionResult Transaction(string searchString, int pageNumber = 1, int pageSize = 10)
     {
-        var transactions = _context.Transactions
-            .OrderByDescending(t => t.TransactionId) // Sorting by TransactionId in descending order
+        var transactions = _context.Transactions.AsQueryable();
+
+        // Apply search filter
+        if (!string.IsNullOrEmpty(searchString))
+        {
+            transactions = transactions.Where(t =>
+                t.TransactionId.ToString().Contains(searchString) ||
+                t.UserId.ToString().Contains(searchString) ||
+                t.OrderId.ToString().Contains(searchString) ||
+                t.Status.Contains(searchString));
+        }
+
+        int totalItems = transactions.Count(); // Total transactions count
+        int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+
+        // Apply pagination
+        var paginatedTransactions = transactions
+            .OrderByDescending(t => t.TransactionId)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
             .ToList();
 
-        return View(transactions);
+        ViewBag.SearchString = searchString;
+        ViewBag.PageNumber = pageNumber;
+        ViewBag.PageSize = pageSize;
+        ViewBag.TotalItems = totalItems;
+        ViewBag.TotalPages = totalPages;
+
+        return View(paginatedTransactions);
     }
+
 
     public async Task<IActionResult> TransactionDetails(int? id)
     {
