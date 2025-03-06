@@ -3,76 +3,91 @@
 @{
     ViewData["Title"] = "Dashboard";
 }
-<div class="main"> 
-<h2>Dashboard</h2>
+<div class="main">
+    <h2>Dashboard</h2>
 
-<div class="row">
-    <!-- Total Reservations -->
-    <div class="col-md-3">
-        <div class="card text-white bg-primary mb-3">
-            <div class="card-header">Total Reservations</div>
-            <div class="card-body">
-                <h3>@Model.TotalReservations</h3>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-header">Total Menu</div>
+                <div class="card-body">
+                    <h3>@Model.TotalMenu</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info mb-3">
+                <div class="card-header">Today's Sales</div>
+                <div class="card-body">
+                    <h3>₱@Model.TodaySales.ToString("N2")</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-dark mb-3">
+                <div class="card-header">Total Revenue</div>
+                <div class="card-body">
+                    <h3>₱@Model.TotalRevenue.ToString("N2")</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-header">Total Transactions</div>
+                <div class="card-body">
+                    <h3>@Model.TotalTransactions</h3>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Total Transactions -->
-    <div class="col-md-3">
-        <div class="card text-white bg-success mb-3">
-            <div class="card-header">Total Transactions</div>
-            <div class="card-body">
-                <h3>@Model.TotalTransactions</h3>
+    <div class="row">
+        <section class="row">
+            <div class="col-lg-6">
+                <h5>Orders Summary</h5>
+                <div class="card p-3">
+                    <div class="progress-group">
+                        @foreach (var item in Model.OrderSummary)
+                        {
+                            <p>@item.Category (@item.Percentage%)</p>
+                            <div class="progress">
+                                <div class="progress-bar" style="width: @item.Percentage%;"></div>
+                            </div>
+                        }
+                    </div>
+                </div>
             </div>
-        </div>
+            <div class="col-lg-6">
+                <h5>Revenue</h5>
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </section>
     </div>
 
-    <!-- Pending Orders -->
-    <div class="col-md-3">
-        <div class="card text-white bg-danger mb-3">
-            <div class="card-header">Pending Orders</div>
-            <div class="card-body">
-                <h3>@Model.PendingOrders</h3>
-            </div>
-        </div>
-    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const revenueData = {
+            labels: @Html.Raw(Json.Serialize(Model.RevenueChartLabels)),
+            datasets: [{
+                label: 'Revenue',
+                data: @Html.Raw(Json.Serialize(Model.RevenueChartData)),
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        };
+
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        const revenueChart = new Chart(ctx, {
+            type: 'line',
+            data: revenueData,
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
 </div>
-
-<!-- Sales Report -->
-<div class="row">
-    <!-- Total Revenue -->
-    <div class="col-md-3">
-        <div class="card text-white bg-dark mb-3">
-            <div class="card-header">Total Revenue</div>
-            <div class="card-body">
-                <h3>₱@Model.TotalRevenue.ToString("N2")</h3>
-            </div>
-        </div>
-    </div>
-
-    <!-- Today's Sales -->
-    <div class="col-md-3">
-        <div class="card text-white bg-info mb-3">
-            <div class="card-header">Today's Sales</div>
-            <div class="card-body">
-                <h3>₱@Model.TodaySales.ToString("N2")</h3>
-            </div>
-        </div>
-    </div>
-
-    <!-- Monthly Sales -->
-    <div class="col-md-3">
-        <div class="card text-white bg-warning mb-3">
-            <div class="card-header">This Month's Sales</div>
-            <div class="card-body">
-                <h3>₱@Model.MonthlySales.ToString("N2")</h3>
-            </div>
-        </div>
-    </div>
-
-    <!-- Yearly Sales -->
-    
-</div>
-
-
-

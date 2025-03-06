@@ -6,6 +6,8 @@ using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using dineflow.Services;
+using dineflow.ViewModel;
+using Microsoft.EntityFrameworkCore;
 namespace dineflow.Controllers
 {
     public class HomeController : Controller
@@ -42,11 +44,24 @@ namespace dineflow.Controllers
         }
         public IActionResult Index()
         {
-            if (User.Identity.IsAuthenticated)
-            {
-                return RedirectToAction("Index", "Dashboard"); 
-            }
-            return View();
+            var reservation = _context.Reservations.ToList();
+            // Fetch menu items where IsArchived is false and the related category is not archived
+            var menuItems = _context.Menus
+                .Include(m => m.Category)
+                .Where(m => !m.IsArchived && m.Category != null && !m.Category.IsArchived)
+                .ToList();
+
+            // Fetch unique categories where IsArchive is false
+            var categories = _context.Categories
+                .Where(c => !c.IsArchived)
+                .Select(c => c.Name)
+                .Distinct()
+                .ToList();
+
+            // Pass categories to the ViewBag
+            ViewBag.Categories = categories;
+            ViewBag.Reservation = reservation;
+            return View(menuItems);
         }
 
         public IActionResult About()
@@ -61,8 +76,29 @@ namespace dineflow.Controllers
 
         public IActionResult Menu()
         {
-            return View();
+            // Fetch menu items where IsArchived is false and the related category is not archived
+            var menuItems = _context.Menus
+                .Include(m => m.Category)
+                .Where(m => !m.IsArchived && m.Category != null && !m.Category.IsArchived)
+                .ToList();
+
+            // Fetch unique categories where IsArchive is false
+            var categories = _context.Categories
+                .Where(c => !c.IsArchived)
+                .Select(c => c.Name)
+                .Distinct()
+                .ToList();
+
+            // Pass categories to the ViewBag
+            ViewBag.Categories = categories;
+
+            return View(menuItems);
         }
+
+
+
+
+
 
         public IActionResult Booking()
         {
