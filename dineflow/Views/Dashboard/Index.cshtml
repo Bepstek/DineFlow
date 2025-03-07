@@ -3,39 +3,77 @@
 @{
     ViewData["Title"] = "Dashboard | DineFlow";
 }
-<div class="main">
+<style>
+    /* Custom color classes */
+    .cc-orange {
+        background-color: #F0A04B;
+    }
+
+    .cc-green {
+        background-color: #B1C29E;
+    }
+
+    .cc-yellow {
+        background-color: #FADA7A;
+    }
+
+    .cc-brown {
+        background-color: #443627;
+    }
+
+    .cc-background {
+        background-color: #FFF0DC;
+    }
+
+    /* Text and card styling */
+    .text-white .text-dark {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .card {
+        box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+</style>
+<div class="main p-4 card">
     <h2>Dashboard</h2>
 
-    <div class="row">
+    <div class="row text-center">
+        <!-- Total Menu Card -->
         <div class="col-md-3">
-            <div class="card text-white bg-primary mb-3">
+            <div class="card text-white mb-3 cc-orange">
                 <div class="card-header">Total Menu</div>
                 <div class="card-body">
-                    <h3>@Model.TotalMenu</h3>
+                    <h3 class="text-white">@Model.TotalMenu</h3>
                 </div>
             </div>
         </div>
+
+        <!-- Today's Sales Card -->
         <div class="col-md-3">
-            <div class="card text-white bg-info mb-3">
+            <div class="card text-white mb-3 cc-yellow">
                 <div class="card-header">Today's Sales</div>
                 <div class="card-body">
-                    <h3>₱@Model.TodaySales.ToString("N2")</h3>
+                    <h3 class="text-white">₱@Model.TodaySales.ToString("N2")</h3>
                 </div>
             </div>
         </div>
+
+        <!-- Total Revenue Card -->
         <div class="col-md-3">
-            <div class="card text-white bg-dark mb-3">
+            <div class="card text-white mb-3 cc-green">
                 <div class="card-header">Total Revenue</div>
                 <div class="card-body">
-                    <h3>₱@Model.TotalRevenue.ToString("N2")</h3>
+                    <h3 class="text-white">₱@Model.TotalRevenue.ToString("N2")</h3>
                 </div>
             </div>
         </div>
+
+        <!-- Total Transactions Card -->
         <div class="col-md-3">
-            <div class="card text-white bg-success mb-3">
+            <div class="card text-white mb-3 cc-orange">
                 <div class="card-header">Total Transactions</div>
                 <div class="card-body">
-                    <h3>@Model.TotalTransactions</h3>
+                    <h3 class="text-white">@Model.TotalTransactions</h3>
                 </div>
             </div>
         </div>
@@ -43,8 +81,9 @@
 
     <div class="row">
         <section class="row">
-            <div class="col-lg-6">
-                <h5>Orders Summary</h5>
+            <!-- Orders Summary Section -->
+            <div class="col-lg-6 p-4">
+                <h5 class="text-dark text-center">Orders Summary</h5>
                 <div class="card p-3">
                     <div class="progress-group">
                         @foreach (var item in Model.OrderSummary)
@@ -57,15 +96,19 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-6">
-                <h5>Revenue</h5>
+
+            <!-- Revenue Chart Section -->
+            <div class="col-lg-6 p-4">
+                <h5 class="text-center">Revenue</h5>
                 <canvas id="revenueChart"></canvas>
             </div>
         </section>
     </div>
 
+    <!-- Chart.js Library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        // Revenue Chart Data
         const revenueData = {
             labels: @Html.Raw(Json.Serialize(Model.RevenueChartLabels)),
             datasets: [{
@@ -77,15 +120,14 @@
             }]
         };
 
+        // Initialize Chart.js Line Chart
         const ctx = document.getElementById('revenueChart').getContext('2d');
         const revenueChart = new Chart(ctx, {
             type: 'line',
             data: revenueData,
             options: {
                 scales: {
-                    y: {
-                        beginAtZero: true
-                    }
+                    y: { beginAtZero: true }
                 }
             }
         });
