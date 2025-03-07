@@ -48,7 +48,7 @@ namespace dineflow.Controllers
         {
             return View(); 
         }
-        public async Task<IActionResult> Menu(string search, int page = 1, int pageSize = 10)
+        public async Task<IActionResult> Menu(string search, int page = 1, int pageSize = 5)
         {
             var query = _context.Menus.Include(m => m.Category).AsQueryable();
 
@@ -58,15 +58,30 @@ namespace dineflow.Controllers
                 query = query.Where(m => m.Name.Contains(search) || m.Category.Name.Contains(search));
             }
 
+            // Populate ViewBag.Categories
+            ViewBag.Categories = _context.Categories
+                                         .Where(c => !c.IsArchived) // Exclude archived categories
+                                         .Select(c => new { c.Id, c.Name })
+                                         .ToList();
+
             // Pagination
-            int totalRecords = await query.CountAsync();
-            var menuItems = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+            int totalItems = await query.CountAsync(); // Total items count
+            int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
 
-            ViewBag.SearchQuery = search;
-            ViewBag.CurrentPage = page;
-            ViewBag.TotalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
+            // Apply pagination
+            var paginatedMenu = await query
+                .OrderByDescending(m => m.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
-            return View(menuItems);
+            ViewBag.SearchString = search;
+            ViewBag.PageNumber = page;
+            ViewBag.PageSize = pageSize;
+            ViewBag.TotalItems = totalItems;
+            ViewBag.TotalPages = totalPages;
+
+            return View(paginatedMenu);
         }
 
 
@@ -119,24 +134,95 @@ namespace dineflow.Controllers
             return fileName;
         }
 
-        public IActionResult EditDish(int id)
+        public IActionResult GetDishById(int id)
         {
-            var menu = _context.Menus.Find(id);
-            if (menu == null)
+            var dish = _context.Menus
+                .Include(m => m.Category)
+                .FirstOrDefault(m => m.Id == id);
+
+            if (dish == null)
             {
                 return NotFound();
             }
 
-            // Populate the dropdown with category data
-            ViewBag.CategoryId = new SelectList(_context.Categories, "Id", "Name", menu.CategoryId);
+            var categories = _context.Categories
+                .Select(c => new { c.Id, c.Name,c.IsArchived })
+                 .Where(c => !c.IsArchived) // Exclude archived categories
+                                     .ToList();
 
-            return View(menu);
+            var dishData = new
+            {
+                id = dish.Id,
+                name = dish.Name,
+                description = dish.Description,
+                price = dish.Price,
+                category = new
+                {
+                    id = dish.Category.Id,
+                    name = dish.Category.Name
+                },
+                imageUrl = dish.ImageBase64, // Filename of the image
+                categories = categories // List of all categories
+            };
+
+            return Json(dishData);
+        }
+        //to be removed
+        public IActionResult EditDish(int id)
+            {
+                var menu = _context.Menus.Find(id);
+                if (menu == null)
+                {
+                    return NotFound();
+                }
+
+                ViewBag.CategoryId = new SelectList(_context.Categories, "Id", "Name", menu.CategoryId);
+
+                return View(menu);
+            }
+
+        [HttpPost]
+        public IActionResult UpdateDish(Menu model, IFormFile imageFile)
+        {
+           
+
+            var dish = _context.Menus.Find(model.Id);
+            if (dish == null)
+            {
+                return Json(new { success = false, message = "Dish not found." });
+            }
+
+            dish.Name = model.Name;
+            dish.Description = model.Description;
+            dish.Price = model.Price;
+            dish.CategoryId = model.CategoryId;
+
+            if (imageFile != null)
+            {
+                // Handle image upload logic here
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
+                var filePath = Path.Combine("wwwroot/dishimage", fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    imageFile.CopyTo(stream);
+                }
+
+                dish.ImageBase64 = fileName;
+            }
+
+            try
+            {
+                _context.SaveChanges();
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Error saving to database.", error = ex.Message });
+            }
         }
 
 
-
-
-        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditDish(int id, IFormCollection collection)
@@ -175,7 +261,7 @@ namespace dineflow.Controllers
                 return View();
             }
         }
-
+       // remove edit method
         public IActionResult DetailDish(int id)
         {
             var menu = _context.Menus.Find(id);
