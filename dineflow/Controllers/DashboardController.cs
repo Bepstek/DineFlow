@@ -235,40 +235,37 @@ using System.Globalization;
     }
 
 
-    public async Task<IActionResult> Menu(string search, int page = 1, int pageSize = 3)
+    public IActionResult Transaction(string searchString, int pageNumber = 1, int pageSize = 10)
     {
-        var query = _context.Menus.Include(m => m.Category).AsQueryable();
+        var transactions = _context.Transactions.AsQueryable();
 
         // Apply search filter
-        if (!string.IsNullOrEmpty(search))
+        if (!string.IsNullOrEmpty(searchString))
         {
-            query = query.Where(m => m.Name.Contains(search) || m.Category.Name.Contains(search));
+            transactions = transactions.Where(t =>
+                t.TransactionId.ToString().Contains(searchString) ||
+                t.UserId.ToString().Contains(searchString) ||
+                t.OrderId.ToString().Contains(searchString) ||
+                t.Status.Contains(searchString));
         }
 
-        // Populate ViewBag.Categories
-        ViewBag.Categories = _context.Categories
-                                     .Where(c => !c.IsArchived) // Exclude archived categories
-                                     .Select(c => new { c.Id, c.Name })
-                                     .ToList();
-
-        // Pagination
-        int totalItems = await query.CountAsync(); // Total items count
+        int totalItems = transactions.Count(); // Total transactions count
         int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
 
         // Apply pagination
-        var paginatedMenu = await query
-            .OrderByDescending(m => m.Id)
-            .Skip((page - 1) * pageSize)
+        var paginatedTransactions = transactions
+            .OrderByDescending(t => t.TransactionId)
+            .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
-            .ToListAsync();
+            .ToList();
 
-        ViewBag.SearchString = search;
-        ViewBag.PageNumber = page;
+        ViewBag.SearchString = searchString;
+        ViewBag.PageNumber = pageNumber;
         ViewBag.PageSize = pageSize;
         ViewBag.TotalItems = totalItems;
         ViewBag.TotalPages = totalPages;
 
-        return View(paginatedMenu);
+        return View(paginatedTransactions);
     }
 
 
