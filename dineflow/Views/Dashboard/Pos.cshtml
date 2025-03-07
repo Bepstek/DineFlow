@@ -161,7 +161,7 @@
                     <div class="mt-4">
                         <!-- Add a container with horizontal scrolling -->
                         <div class="d-flex gap-2 overflow-auto" style="white-space: nowrap; overflow-x: auto; padding-bottom: 10px;">
-                            <button class="btn cc-orange text-light btn-sm" onclick="filterProducts('All')">All</button>
+                            <button class="btn cc-orange btn-sm text-light" onclick="filterProducts('All')">All</button>
                             @foreach (var category in ViewBag.Categories as List<string>)
                             {
                                 <button class="btn cc-orange btn-sm text-light" onclick="filterProducts('@category')">@category</button>
@@ -173,14 +173,18 @@
                 <div class="row g-2" id="product-list">
                     @foreach (var product in Model)
                     {
+                        
                         <div class="col-md-2 product-item" data-category="@product.Category.Name">
+                            <a onclick="addToCart(@product.Id, '@product.Name', @product.Price)" style="cursor:pointer">
                             <div class="product-card p-2">
                                 <img src="~/dishimage/@product.ImageBase64" alt="@product.Name">
                                 <h5 title="@product.Name">@(product.Name.Length > 20 ? product.Name.Substring(0, 20) + "..." : product.Name)</h5>
                                 <p>₱@product.Price</p>
                                 <button class="btn btn-success btn-sm" onclick="addToCart(@product.Id, '@product.Name', @product.Price)">Add</button>
                             </div>
+                            </a>
                         </div>
+                        
                     }
                 </div>
             </div>
