@@ -2,49 +2,96 @@
 
     @model IEnumerable<dineflow.Models.Inventory>
 
-    @{
-        ViewData["Title"] = "Inventory";
+@{
+    ViewData["Title"] = "Inventory | DineFlow";
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Get the logged-in user's ID
     }
 
-    <div class="main p-4">
+    <div class="main p-2">
         <div class="row">
-            <div class="col-md-8">
-                <h3 class="mb-4">Transaction Records</h3>
-                <button class="btn btn-primary insert-details"
-                        data-bs-toggle="modal" data-bs-target="#inventoryDetailsModal">
-                    Add Inventory Record
-                </button>
+        <div class="col-md-8">
+            <h3 class="mb-4 text-black">Inventory Records</h3>
 
-                <div class="table-responsive">
-                    <table class="table table-bordered">
-                        <thead class="table-dark">
-                            <tr>
-                                <th></th>
-                                <th>Date of Inventory</th>
-                                <th>User</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        @foreach (var item in Model)
-                        {
-                            <tr>
-                                <th>@item.InventoryId</th>
-                                <td>@item.DateOfInventory.ToString("yyyy-MM-dd")</td>
-                                <td>@item.User.Lastname</td>
-                                <td>
-                                    <button class="btn btn-primary view-details" data-id="@item.InventoryId">Details</button>
-                                </td>
-                            </tr>
-                        }
-                        </tbody>
-                    </table>
+            <div class="container mt-4">
+                <!-- Add Inventory Button (Now properly spaced) -->
+                <div class="mb-3">
+                    <button class="btn btn-success insert-details" data-bs-toggle="modal" data-bs-target="#inventoryDetailsModal">
+                        Add Inventory Record
+                    </button>
+                </div>
+
+                <div class="card shadow-sm">
+                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Transaction Records</h5>
+
+                        <!-- Search Bar -->
+                        <form method="post" asp-action="Inventory" id="searchForm" class="d-flex">
+                            <input type="text" name="search" value="@ViewBag.SearchQuery" id="searchInput" 
+                                class="form-control me-2" placeholder="Search inventory...">
+                            <button type="submit" class="btn btn-primary">Search</button>
+                        </form>
+                    </div>
+
+                    <div class="card-body">
+                        <!-- Table with Responsive Scroll -->
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Date of Inventory</th>
+                                        <th>User</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>@item.InventoryId</td>
+                                            <td>@item.DateOfInventory.ToString("yyyy-MM-dd")</td>
+                                            <td>@item.User.Lastname</td>
+                                            <td>
+                                                <button class="btn btn-info view-details" data-id="@item.InventoryId">Details</button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Pagination positioned at bottom-left -->
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <nav>
+                                <ul class="pagination mb-0">
+                                    @if (ViewBag.CurrentPage > 1)
+                                    {
+                                        <li class="page-item">
+                                            <a class="page-link" href="?search=@ViewBag.SearchQuery&page=@(ViewBag.CurrentPage - 1)">Previous</a>
+                                        </li>
+                                    }
+                                    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                                    {
+                                        <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                                            <a class="page-link" href="?search=@ViewBag.SearchQuery&page=@i">@i</a>
+                                        </li>
+                                    }
+                                    @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                                    {
+                                        <li class="page-item">
+                                            <a class="page-link" href="?search=@ViewBag.SearchQuery&page=@(ViewBag.CurrentPage + 1)">Next</a>
+                                        </li>
+                                    }
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </div>
 
             <div class="col-md-4">
-                <h3 class="mb-4">Inventory Details</h3>
+                <h3 class="mb-4">Inventory Detail</h3>
                 <div class="table-responsive">
                     <table class="table table-bordered" id="detailsTable">
                         <thead class="table-dark">
@@ -120,6 +167,8 @@
             </div>
         </div>
     </div>
+
+
 
     <script>
            document.addEventListener("DOMContentLoaded", function () {
@@ -250,3 +299,4 @@
         });
     });
     </script>
+

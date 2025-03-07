@@ -1,77 +1,101 @@
 ﻿@model IEnumerable<dineflow.Models.Reservation>
 
 @{
-    ViewData["Title"] = "Reservation";
+    ViewData["Title"] = "Reservation | DineFlow";
+    int pageNumber = ViewBag.PageNumber;
+    int pageSize = ViewBag.PageSize;
+    int totalItems = ViewBag.TotalItems;
+    int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
 }
 
 <div class="main">
-    <h1>Reservation</h1>
+   <h1 class="mb-5"></h1>
+    <div class="container mt-4">
+        <!-- Button aligned to the top-left of the table -->
+        @* <div class="mb-2"> *@
+        @*     <a asp-action="Create" class="btn btn-success">Create New</a> *@
+        @* </div> *@
 
-    <p>
-        <a asp-action="Create">Create New</a>
-    </p>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Name)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Email)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.PhoneNumber)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.NumberOfPeople)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.DateTime)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.ReservedDate)
-                </th>
-                <th> Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Name)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Email)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.PhoneNumber)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.NumberOfPeople)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.DateTime)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.ReservedDate)
-                    </td>
-                    <td>
-                        
-                        <a href="javascript:void(0);" onclick="redirectToPOS(@item.Id)">Served</a>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">Reservations</h5>
+            <form method="get" asp-action="Reservation" id="searchForm" class="d-flex"> 
+                <input type="text" name="searchString" value="@ViewBag.SearchString" 
+                       placeholder="Search by name, email, or phone" class="form-control me-2"> 
+                <button type="submit" class="btn btn-primary">Search</button> 
+            </form> 
+        </div>
+        <div class="card shadow-sm">
+            @* <div class="card-header bg-light d-flex justify-content-between align-items-center"> *@
+            @*     <h5 class="mb-0">Reservations</h5> *@
+            
+            @*     <!-- Search Form --> *@
+            @*     <form method="get" asp-action="Reservation" id="searchForm" class="d-flex"> *@
+            @*         <input type="text" name="searchString" value="@ViewBag.SearchString" *@
+            @*             placeholder="Search by name, email, or phone" class="form-control me-2"> *@
+            @*         <button type="submit" class="btn btn-primary">Search</button> *@
+            @*     </form> *@
+            @* </div> *@
 
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+
+
+            <div class="card-body">
+                <!-- Added table-responsive for horizontal scrolling -->
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.First().Name)</th>
+                                <th>@Html.DisplayNameFor(model => model.First().Email)</th>
+                                <th>@Html.DisplayNameFor(model => model.First().PhoneNumber)</th>
+                                <th>@Html.DisplayNameFor(model => model.First().NumberOfPeople)</th>
+                                <th>@Html.DisplayNameFor(model => model.First().DateTime)</th>
+                                <th>@Html.DisplayNameFor(model => model.First().ReservedDate)</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Email)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.PhoneNumber)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.NumberOfPeople)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.DateTime)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.ReservedDate)</td>
+                                    <td>
+                                        <a href="javascript:void(0);" class="text-success fw-bold" onclick="redirectToPOS(@item.Id)">Served</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div> <!-- End of table-responsive -->
+            </div>
+        </div>
+    </div>
+    <!-- Pagination -->
+    <div>
+        @if (totalPages > 1)
+        {
+            <ul class="pagination">
+                @for (int i = 1; i <= totalPages; i++)
+                {
+                    <li class="page-item @(i == pageNumber ? "active" : "")">
+                        <a class="page-link" asp-action="Reservation" asp-route-pageNumber="@i" asp-route-searchString="@ViewBag.SearchString">@i</a>
+                    </li>
+                }
+            </ul>
+        }
+    </div>
 </div>
+
 <script>
-            function redirectToPOS(reservationId) {
+   
+
+    function redirectToPOS(reservationId) {
         if (confirm("Mark this reservation as served?")) {
             window.location.href = `/Dashboard/Pos?reservationId=` + reservationId;
         }
     }
-
-
 </script>

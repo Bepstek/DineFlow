@@ -27,7 +27,7 @@
                 <a class="nav-item nav-link" asp-area="" asp-controller="Home" asp-action="About">About</a>
                 @* <a class="nav-item nav-link" asp-area="" asp-controller="Home" asp-action="Service">Service</a> *@
                 <a class="nav-item nav-link" asp-area="" asp-controller="Home" asp-action="Menu">Menu</a>
-                <a class="nav-item nav-link" asp-area="" asp-controller="Home" asp-action="Role">Roles(Temporary)</a>
+                @* <a class="nav-item nav-link" asp-area="" asp-controller="Home" asp-action="Role">Roles(Temporary)</a> *@
                 
             </div>
             <a class="btn btn-primary py-2 px-4" asp-area="" asp-controller="Home" asp-action="Booking">Reserve A Table</a>
@@ -185,7 +185,7 @@
                             {
                                 <div class="col-lg-6">
                                     <div class="d-flex align-items-center">
-                                        <img class="flex-shrink-0 img-fluid rounded" src="~/dishimage/@item.ImageBase64" alt="@item.Name" style="width: 80px;">
+                                        <img class="flex-shrink-0 img-fluid rounded" src="~/dishimage/@item.ImageBase64" alt="@item.Name" style="width: 100px;height:100px; object-fit; border: 1px solid #FEA116; ">
                                         <div class="w-100 d-flex flex-column text-start ps-4">
                                             <h5 class="d-flex justify-content-between border-bottom pb-2">
                                                 <span>@item.Name</span>
