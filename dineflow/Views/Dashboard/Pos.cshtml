@@ -1,16 +1,13 @@
-
- @model IEnumerable<dineflow.Models.Menu>
-    @{
-        ViewData["Title"] = "Point of Sale | DineFlow "; 
-    }
-    <style>
-
+    @model IEnumerable<dineflow.Models.Menu>
+@{
+    ViewData["Title"] = "Point of Sale | DineFlow ";
+}
+<style>
     .product-card {
         border-radius: 10px;
         padding: 15px;
         text-align: center;
         background-color: white;
-        background-color: rgba(255, 255, 255, 0.8); /* 90% opacity */
         box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
         height: 250px; /* Fixed height for all cards */
         display: flex;
@@ -18,60 +15,83 @@
         justify-content: space-between;
     }
 
-        .product-card img {
-            max-width: 100%;
-            height: 120px;
-            object-fit: cover;
-            border-radius: 10px;
+    #product-list {
+        max-height: 560px; /* Adjust this value as needed */
+        overflow-y: auto; /* Enable vertical scrolling */
+        display: flex;
+        flex-wrap: wrap;
+        gap: 30px; /* Add spacing between product cards */
+        padding: 10px; /* Add padding for better spacing */
+    }
+
+        /* Custom scrollbar styling for #product-list */
+        #product-list::-webkit-scrollbar {
+            width: 8px; /* Width of the scrollbar */
+            height: 8px; /* Height of the scrollbar (for horizontal scrollbars) */
         }
 
-        .product-card h5 {
-            font-size: 16px;
-            margin: 10px 0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 100%;
+        #product-list::-webkit-scrollbar-track {
+            background: transparent; /* Transparent background for the track */
         }
 
-        .order-details {
-
-       
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
+        #product-list::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.5); /* Semi-transparent scrollbar thumb */
+            border-radius: 10px; /* Rounded corners for the thumb */
         }
 
-        #cart-items {
-            max-height: 250px;
-            overflow-y: auto;
-            flex-grow: 1;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 10px;
-        }
+            #product-list::-webkit-scrollbar-thumb:hover {
+                background: rgba(255, 255, 255, 0.9); /* Darker thumb on hover */
+            }
 
-        .order-footer {
-            padding-top: 10px;
-            background: white;
-        }
+    .product-card img {
+        max-width: 100%;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 10px;
+    }
 
-        .cart-table {
+    .product-card h5 {
+        font-size: 16px;
+        margin: 10px 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
 
-        
+    .order-details {
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
 
+    #cart-items {
+        max-height: 250px;
+        overflow-y: auto;
+        flex-grow: 1;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 10px;
+    }
+
+    .order-footer {
+        padding-top: 10px;
+        background: white;
+    }
+
+    .cart-table {
         overflow-y: auto;
         width: 100%;
         border-collapse: collapse;
     }
 
-    .cart-table th, .cart-table td {
+        .cart-table th, .cart-table td {
             padding: 8px;
             text-align: center;
             border-bottom: 1px solid #ddd;
-    }
+        }
 
     .quantity-btn {
         width: 25px;
@@ -80,7 +100,6 @@
         padding: 0;
     }
 
-    /* Custom color classes */
     .cc-orange {
         background-color: #F0A04B;
     }
@@ -101,7 +120,6 @@
         background-color: #FFF0DC;
     }
 
-    /* Text and card styling */
     .text-white {
         text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
     }
@@ -111,24 +129,47 @@
         margin-bottom: 20px;
     }
 
+    .d-flex.overflow-auto::-webkit-scrollbar {
+        height: 8px; /* Height of the scrollbar */
+    }
 
+    .d-flex.overflow-auto::-webkit-scrollbar-track {
+        background: transparent; /* Transparent background */
+    }
+
+    .d-flex.overflow-auto::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.5); /* Semi-transparent scrollbar thumb */
+        border-radius: 10px; /* Rounded corners */
+    }
+
+        .d-flex.overflow-auto::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.9); /* Darker on hover */
+        }
 </style>
 
-<div class="main p-4 card hero-header2">
+<div class="main card hero-header2">
     <div class="container-fluid">
         <div class="row">
-            <div class="mb-3">
-                <div class="d-flex gap-2 overflow-auto" style="white-space: nowrap; overflow-x: auto;">
-                    <button class="btn cc-orange text-light btn-sm" onclick="filterProducts('All')">All</button>
-                    @foreach (var category in ViewBag.Categories as List<string>)
-                    {
-                        <button class="btn cc-orange text-light btn-sm" onclick="filterProducts('@category')">@category</button>
-                    }
+           
 
-                </div>
+
+
+            <!-- Product Section -->
             <!-- Product Section -->
             <div class="col-md-8">
-                <h3 class="text-white">Products</h3>
+                <div>
+                    <div class="mt-4">
+                        <!-- Add a container with horizontal scrolling -->
+                        <div class="d-flex gap-2 overflow-auto" style="white-space: nowrap; overflow-x: auto; padding-bottom: 10px;">
+                            <button class="btn cc-orange text-light btn-sm" onclick="filterProducts('All')">All</button>
+                            @foreach (var category in ViewBag.Categories as List<string>)
+                            {
+                                <button class="btn cc-orange btn-sm text-light" onclick="filterProducts('@category')">@category</button>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <h3 class="text-white mb-2">Products</h3>
                 <div class="row g-2" id="product-list">
                     @foreach (var product in Model)
                     {
@@ -140,12 +181,12 @@
                                 <button class="btn btn-success btn-sm" onclick="addToCart(@product.Id, '@product.Name', @product.Price)">Add</button>
                             </div>
                         </div>
-                        }
-                    </div>
+                    }
                 </div>
+            </div>
 
             <!-- Cart Section -->
-            <div class="col-md-4 mt-5 d-flex flex-column card">
+            <div class="col-md-4 mt-3  d-flex flex-column">
                 <div class="order-details">
                     <h4>Order Details</h4>
                     <div class="cart-container" style="min-height:300px;max-height:300px; overflow-y:auto;">
@@ -164,133 +205,132 @@
                     </div>
                     <div class="order-footer">
                         <h4>Total: <span style="margin-right: 200px"></span>₱<span id="total">0</span></h4>
-                       <div class="mb-2">Table: <input type="number" class="form-control" id="table-input"></div>
+                        <div class="mb-2">Table: <input type="number" class="form-control" id="table-input"></div>
                         <div class="mb-2">Cash: <input type="number" class="form-control" id="cash-input" oninput="calculateChange()"></div>
                         <div class="mb-2">Change: ₱<span id="change">0.00</span></div>
                         <input type="hidden" id="reservation-id" value="@ViewBag.ReservationId">
 
-
-                        <button class="btn btn-success text-white w-100 mt-2" onclick="checkout()">Checkout</button>
-
+                        <button class="btn btn-success  w-100 mt-2" onclick="checkout()">Checkout</button>
                     </div>
                 </div>
-
             </div>
+
         </div>
     </div>
+</div>
 
-    <script>
-        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+<script>
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-        function addToCart(menuitemid, name, price) {
-            let existing = cart.find(item => item.menuitemid === menuitemid);
-            if (existing) {
-                existing.quantity++;
-            } else {
-                cart.push({ menuitemid, name, price, quantity: 1 });
-            }
-            saveCart();
-            updateCart();
+    function addToCart(menuitemid, name, price) {
+        let existing = cart.find(item => item.menuitemid === menuitemid);
+        if (existing) {
+            existing.quantity++;
+        } else {
+            cart.push({ menuitemid, name, price, quantity: 1 });
         }
-
-        function removeFromCart(menuitemid) {
-            cart = cart.filter(item => item.menuitemid !== menuitemid);
-            saveCart();
-            updateCart();
-        }
-
-        function changeQuantity(menuitemid, delta) {
-            let item = cart.find(item => item.menuitemid === menuitemid);
-            if (item) {
-                item.quantity += delta;
-                if (item.quantity <= 0) {
-                    removeFromCart(menuitemid);
-                }
-            }
-            saveCart();
-            updateCart();
-        }
-
-        function updateCart() {
-            let cartItems = document.getElementById('cart-items');
-            let total = 0;
-            cartItems.innerHTML = '';
-
-            cart.forEach(item => {
-                total += item.price * item.quantity;
-                cartItems.innerHTML += `
-                    <tr>
-                        <td style="max-width:100px;"><p>${item.name}s</p></td>
-                        <td>
-                            <button class="btn btn-sm btn-secondary quantity-btn" onclick="changeQuantity(${item.menuitemid}, -1)">-</button>
-                            ${item.quantity}
-                            <button class="btn btn-sm btn-secondary quantity-btn" onclick="changeQuantity(${item.menuitemid}, 1)">+</button>
-                        </td>
-                        <td>₱${(item.price * item.quantity).toFixed(2)}</td>
-                        <td><button class="btn btn-danger btn-sm" onclick="removeFromCart(${item.menuitemid})">X</button></td>
-                    </tr>`;
-            });
-
-            document.getElementById('total').innerText = total.toFixed(2);
-            calculateChange();
-        }
-
-        function calculateChange() {
-            let cashInput = parseFloat(document.getElementById("cash-input").value) || 0;
-            let total = parseFloat(document.getElementById("total").innerText);
-            let change = cashInput - total;
-            document.getElementById("change").innerText = change > 0 ? change.toFixed(2) : "0.00";
-        }
-
-        function saveCart() {
-            localStorage.setItem('cart', JSON.stringify(cart));
-        }
-
-            function checkout() {
-                if (cart.length === 0) {
-                    alert("Cart is empty!");
-                    return;
-                }
-
-                const orderData = {
-                    reservationId: document.getElementById("reservation-id").value ? parseInt(document.getElementById("reservation-id").value) : null,
-                    tableId: parseInt(document.getElementById("table-input").value) || null,
-                    userId: 1,
-                    status:  "Preparing",
-                    cart: cart
-
-                };
-
-                fetch('/Orders/Checkout', {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(orderData)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    alert(`Order placed! Transaction ID: ${data.transactionId}`);
-                    cart = [];
-                    saveCart();
-                    updateCart();
-                     const url = new URL(window.location.href);
-                url.searchParams.delete('reservationId');
-                window.location.href = url.toString();
-                })
-                .catch(error => console.error("Error:", error));
-            }
-
-            function filterProducts(category) {
-            document.querySelectorAll('.product-item').forEach(item => {
-                if (category === 'All' || item.getAttribute('data-category') === category) {
-                    item.style.display = "flex"; // Use flex instead of block
-                } else {
-                    item.style.display = "none";
-                }
-            });
-        }
-
-
+        saveCart();
         updateCart();
-    </script>
+    }
+
+    function removeFromCart(menuitemid) {
+        cart = cart.filter(item => item.menuitemid !== menuitemid);
+        saveCart();
+        updateCart();
+    }
+
+    function changeQuantity(menuitemid, delta) {
+        let item = cart.find(item => item.menuitemid === menuitemid);
+        if (item) {
+            item.quantity += delta;
+            if (item.quantity <= 0) {
+                removeFromCart(menuitemid);
+            }
+        }
+        saveCart();
+        updateCart();
+    }
+
+    function updateCart() {
+        let cartItems = document.getElementById('cart-items');
+        let total = 0;
+        cartItems.innerHTML = '';
+
+        cart.forEach(item => {
+            total += item.price * item.quantity;
+            cartItems.innerHTML += `
+                <tr>
+                    <td style="max-width:100px;"><p>${item.name}s</p></td>
+                    <td>
+                        <button class="btn btn-sm btn-secondary quantity-btn" onclick="changeQuantity(${item.menuitemid}, -1)">-</button>
+                        ${item.quantity}
+                        <button class="btn btn-sm btn-secondary quantity-btn" onclick="changeQuantity(${item.menuitemid}, 1)">+</button>
+                    </td>
+                    <td>₱${(item.price * item.quantity).toFixed(2)}</td>
+                    <td><button class="btn btn-danger btn-sm" onclick="removeFromCart(${item.menuitemid})">X</button></td>
+                </tr>`;
+        });
+
+        document.getElementById('total').innerText = total.toFixed(2);
+        calculateChange();
+    }
+
+    function calculateChange() {
+        let cashInput = parseFloat(document.getElementById("cash-input").value) || 0;
+        let total = parseFloat(document.getElementById("total").innerText);
+        let change = cashInput - total;
+        document.getElementById("change").innerText = change > 0 ? change.toFixed(2) : "0.00";
+    }
+
+    function saveCart() {
+        localStorage.setItem('cart', JSON.stringify(cart));
+    }
+
+        function checkout() {
+            if (cart.length === 0) {
+                alert("Cart is empty!");
+                return;
+            }
+
+            const orderData = {
+                reservationId: document.getElementById("reservation-id").value ? parseInt(document.getElementById("reservation-id").value) : null,
+                tableId: parseInt(document.getElementById("table-input").value) || null,
+                userId: 1,
+                status:  "Preparing",
+                cart: cart
+
+            };
+
+            fetch('/Orders/Checkout', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(orderData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(`Order placed! Transaction ID: ${data.transactionId}`);
+                cart = [];
+                saveCart();
+                updateCart();
+                 const url = new URL(window.location.href);
+            url.searchParams.delete('reservationId');
+            window.location.href = url.toString();
+            })
+            .catch(error => console.error("Error:", error));
+        }
+
+        function filterProducts(category) {
+        document.querySelectorAll('.product-item').forEach(item => {
+            if (category === 'All' || item.getAttribute('data-category') === category) {
+                item.style.display = "block"; // Use flex instead of block
+            } else {
+                item.style.display = "none";
+            }
+        });
+    }
+
+
+    updateCart();
+</script>
