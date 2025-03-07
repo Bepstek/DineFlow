@@ -1,57 +1,62 @@
 ﻿@model dineflow.Models.Menu
 
 @{
-    ViewData["Title"] = "DetailDish";
+    ViewData["Title"] = "Dish Details";
 }
+<div class="main">
 
-<h1>DetailDish</h1>
 
-<div>
-    <h4>Menu</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Category)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Category.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Price)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Price)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ImageBase64)
-        </dt>
-        <dd class = "col-sm-10">
-            @if (!string.IsNullOrEmpty(Model.ImageBase64))
-            {
-                <img src="~/dishimage/@Model.ImageBase64" class="rounded-circle" width="300" height="300" asp-append-version="true" />
-            }
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IsArchived)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IsArchived)
-        </dd>
-    </dl>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-5 col-md-10 col-sm-12">
+            <div class="card shadow-lg">
+                <div class="card-header bg-warning text-white text-center">
+                    <h3 class="mb-0">Dish Details</h3>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-4 fw-bold">Dish Name:</dt>
+                        <dd class="col-sm-8">@Model.Name</dd>
+
+                        <dt class="col-sm-4 fw-bold">Category:</dt>
+                        <dd class="col-sm-8">@Model.Category?.Name</dd>
+
+                        <dt class="col-sm-4 fw-bold">Description:</dt>
+                        <dd class="col-sm-8">@Model.Description</dd>
+
+                        <dt class="col-sm-4 fw-bold">Price:</dt>
+                        <dd class="col-sm-8">₱ @Model.Price.ToString("F2")</dd>
+
+                        <dt class="col-sm-4 fw-bold">Availability:</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.IsArchived)
+                            {
+                                <span class="badge bg-danger">Not Available</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">Available</span>
+                            }
+                        </dd>
+                    </dl>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <a asp-action="EditDish" asp-route-id="@Model.Id" class="btn btn-warning">Edit Dish</a>
+                        <a asp-action="Menu" class="btn btn-outline-secondary">Back to Menu</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.ImageBase64))
+        {
+                <div class="col-lg-4 col-md-10 col-sm-12 text-center " >
+                <div class="card p-3 shadow">
+                    
+                    <img src="~/dishimage/@Model.ImageBase64" class="img-fluid rounded" width="auto" style="max-height:330px"  asp-append-version="true" />
+                </div>
+            </div>
+        }
+    </div>
 </div>
-<div>
-    <a asp-action="EditDish" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Menu">Back to List</a>
 </div>

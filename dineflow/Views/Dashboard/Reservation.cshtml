@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<dineflow.Models.Reservation>
 
 @{
-    ViewData["Title"] = "Reservation";
+    ViewData["Title"] = "Reservation | DineFlow";
     int pageNumber = ViewBag.PageNumber;
     int pageSize = ViewBag.PageSize;
     int totalItems = ViewBag.TotalItems;
@@ -12,21 +12,31 @@
    <h1 class="mb-5"></h1>
     <div class="container mt-4">
         <!-- Button aligned to the top-left of the table -->
-        <div class="mb-2">
-            <a asp-action="Create" class="btn btn-success">Create New</a>
-        </div>
+        @* <div class="mb-2"> *@
+        @*     <a asp-action="Create" class="btn btn-success">Create New</a> *@
+        @* </div> *@
 
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">Reservations</h5>
+            <form method="get" asp-action="Reservation" id="searchForm" class="d-flex"> 
+                <input type="text" name="searchString" value="@ViewBag.SearchString" 
+                       placeholder="Search by name, email, or phone" class="form-control me-2"> 
+                <button type="submit" class="btn btn-primary">Search</button> 
+            </form> 
+        </div>
         <div class="card shadow-sm">
-            <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Reservations</h5>
+            @* <div class="card-header bg-light d-flex justify-content-between align-items-center"> *@
+            @*     <h5 class="mb-0">Reservations</h5> *@
             
-                <!-- Search Form -->
-                <form method="get" asp-action="Reservation" id="searchForm" class="d-flex">
-                    <input type="text" name="searchString" value="@ViewBag.SearchString"
-                        placeholder="Search by name, email, or phone" class="form-control me-2">
-                    <button type="submit" class="btn btn-primary">Search</button>
-                </form>
-            </div>
+            @*     <!-- Search Form --> *@
+            @*     <form method="get" asp-action="Reservation" id="searchForm" class="d-flex"> *@
+            @*         <input type="text" name="searchString" value="@ViewBag.SearchString" *@
+            @*             placeholder="Search by name, email, or phone" class="form-control me-2"> *@
+            @*         <button type="submit" class="btn btn-primary">Search</button> *@
+            @*     </form> *@
+            @* </div> *@
+
+
 
             <div class="card-body">
                 <!-- Added table-responsive for horizontal scrolling -->

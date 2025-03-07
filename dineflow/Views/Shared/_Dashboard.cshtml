@@ -55,7 +55,7 @@
                     <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
                        data-bs-target="#admin-monitor" aria-expanded="false" aria-controls="admin-monitor">
                         <i class="lni lni-display"></i>
-                        <span>Monitors</span>
+                        <span>Monitors</span><i class="lni lni-chevron-down" style="margin-left:100px; " ></i>
                     </a>
                     <ul id="admin-monitor" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
                         <li class="sidebar-item">
@@ -80,8 +80,9 @@
                         <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
                            data-bs-target="#admin-dropdown" aria-expanded="false" aria-controls="admin-dropdown">
                             <i class="lni lni-cog"></i>
-                            <span>Admin</span>
+                            <span>Admin</span><i class="lni lni-chevron-down" style="margin-left:114px; "></i>
                         </a>
+                        
                         <ul id="admin-dropdown" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
                             <li class="sidebar-item">
                                 <a class="sidebar-link" asp-area="" asp-controller="Admin" asp-action="Management">
@@ -100,6 +101,7 @@
                                     <i class="lni lni-package"></i>
                                     Menu
                                 </a>
+
                             </li>
                             @* <li class="sidebar-item"> *@
                             @*     <a class="sidebar-link" asp-area="" asp-controller="Admin" asp-action="Settings"> *@

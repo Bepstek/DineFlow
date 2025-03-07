@@ -1,5 +1,7 @@
 ﻿@model IEnumerable<dineflow.Models.Menu>
-
+@{
+    ViewData["Title"] = "Point of Sale | DineFlow "; 
+}
 <style>
     .product-card {
         border-radius: 10px;
@@ -119,7 +121,7 @@
                         <div class="mb-2">Change: ₱<span id="change">0.00</span></div>
                         <input type="hidden" id="reservation-id" value="@ViewBag.ReservationId">
 
-                        <button class="btn btn-primary w-100 mt-2" onclick="checkout()">Checkout</button>
+                        <button class="btn btn-success  w-100 mt-2" onclick="checkout()">Checkout</button>
                     </div>
                 </div>
             </div>

@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Kitchen Monitor";
+    
     var preparingOrders = Model.Where(t => t.Status == "Preparing").ToList();
 }
 
