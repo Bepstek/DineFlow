@@ -166,6 +166,13 @@
     background-size: cover;
 }
 
+.hero-header2 {
+    background: linear-gradient(rgba(15, 23, 43, .9), rgba(15, 23, 43, .9)), url(../img/bg-1.jpg);
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
 .hero-header img {
     animation: imgRotate 50s linear infinite;
 }

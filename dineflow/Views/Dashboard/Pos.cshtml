@@ -1,12 +1,23 @@
 ﻿@model IEnumerable<dineflow.Models.Menu>
+<<<<<<< Updated upstream
 
+=======
+@{
+    ViewData["Title"] = "Point of Sale | DineFlow ";    
+}
+>>>>>>> Stashed changes
 <style>
     .product-card {
         border-radius: 10px;
         padding: 15px;
         text-align: center;
         background-color: white;
+        background-color: rgba(255, 255, 255, 0.8); /* 90% opacity */
         box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        height: 250px; /* Fixed height for all cards */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
 
         .product-card img {
@@ -15,6 +26,16 @@
             object-fit: cover;
             border-radius: 10px;
         }
+
+        .product-card h5 {
+            font-size: 16px;
+            margin: 10px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+
 
     .order-details {
        
@@ -47,11 +68,11 @@
         border-collapse: collapse;
     }
 
-        .cart-table th, .cart-table td {
+    .cart-table th, .cart-table td {
             padding: 8px;
             text-align: center;
             border-bottom: 1px solid #ddd;
-        }
+    }
 
     .quantity-btn {
         width: 25px;
@@ -59,17 +80,50 @@
         font-size: 14px;
         padding: 0;
     }
+
+    /* Custom color classes */
+    .cc-orange {
+        background-color: #F0A04B;
+    }
+
+    .cc-green {
+        background-color: #B1C29E;
+    }
+
+    .cc-yellow {
+        background-color: #FADA7A;
+    }
+
+    .cc-brown {
+        background-color: #443627;
+    }
+
+    .cc-background {
+        background-color: #FFF0DC;
+    }
+
+    /* Text and card styling */
+    .text-white {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .card {
+        box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        margin-bottom: 20px;
+    }
+
+
 </style>
 
-<div class="main">
+<div class="main p-4 card hero-header2">
     <div class="container-fluid">
         <div class="row">
             <div class="mb-3">
                 <div class="d-flex gap-2 overflow-auto" style="white-space: nowrap; overflow-x: auto;">
-                    <button class="btn btn-secondary btn-sm" onclick="filterProducts('All')">All</button>
+                    <button class="btn cc-orange text-light btn-sm" onclick="filterProducts('All')">All</button>
                     @foreach (var category in ViewBag.Categories as List<string>)
                     {
-                        <button class="btn btn-secondary btn-sm" onclick="filterProducts('@category')">@category</button>
+                        <button class="btn cc-orange text-light btn-sm" onclick="filterProducts('@category')">@category</button>
                     }
                 </div>
             </div>
@@ -78,14 +132,15 @@
 
             <!-- Product Section -->
             <div class="col-md-8">
-                <h3>Products</h3>
+                <h3 class="text-white">Products</h3>
                 <div class="row g-2" id="product-list">
                     @foreach (var product in Model)
                     {
+
                         <div class="col-md-2 product-item" data-category="@product.Category.Name">
                             <div class="product-card p-2">
                                 <img src="~/dishimage/@product.ImageBase64" alt="@product.Name">
-                                <h5>@product.Name</h5>
+                                <h5 title="@product.Name">@(product.Name.Length > 20 ? product.Name.Substring(0, 20) + "..." : product.Name)</h5>
                                 <p>₱@product.Price</p>
                                 <button class="btn btn-success btn-sm" onclick="addToCart(@product.Id, '@product.Name', @product.Price)">Add</button>
                             </div>
@@ -95,7 +150,7 @@
             </div>
 
             <!-- Cart Section -->
-            <div class="col-md-4 mt-5 d-flex flex-column">
+            <div class="col-md-4 mt-5 d-flex flex-column card">
                 <div class="order-details">
                     <h4>Order Details</h4>
                     <div class="cart-container" style="min-height:300px;max-height:300px; overflow-y:auto;">
@@ -119,7 +174,11 @@
                         <div class="mb-2">Change: ₱<span id="change">0.00</span></div>
                         <input type="hidden" id="reservation-id" value="@ViewBag.ReservationId">
 
+<<<<<<< Updated upstream
                         <button class="btn btn-primary w-100 mt-2" onclick="checkout()">Checkout</button>
+=======
+                        <button class="btn btn-success text-white w-100 mt-2" onclick="checkout()">Checkout</button>
+>>>>>>> Stashed changes
                     </div>
                 </div>
             </div>
