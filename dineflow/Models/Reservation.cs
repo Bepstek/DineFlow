@@ -25,5 +25,7 @@ namespace dineflow.Models
         public DateTime DateTime { get; set; }
 
         public DateTime ReservedDate { get; set; } = DateTime.Now;
+
+        public string Status { get; set; }
     }
 }

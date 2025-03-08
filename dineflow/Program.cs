@@ -1,3 +1,5 @@
+using dineflow.Controllers;
+using System.Configuration;
 using dineflow.Data;
 using dineflow.Models;
 using dineflow.Services;
@@ -19,7 +21,10 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<IdentityUser>().AddDefaultTokenProviders()
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.AddScoped<IActivityLogger, LogsController>();
 builder.Services.AddScoped<EmailService>();
+// Startup.cs or Program.cs
 
 
 // Configure Cookie Authentication and Redirection After Login

@@ -22,8 +22,4 @@
     <PackageReference Include="SendGrid" Version="9.29.3" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="wwwroot\dishimage\" />
-  </ItemGroup>
-
 </Project>

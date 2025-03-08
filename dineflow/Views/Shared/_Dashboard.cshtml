@@ -126,12 +126,12 @@
                                 </a>
 
                             </li>
-                            @* <li class="sidebar-item"> *@
-                            @*     <a class="sidebar-link" asp-area="" asp-controller="Admin" asp-action="Settings"> *@
-                            @*         <i class="lni lni-cog"></i> *@
-                            @*         Settings *@
-                            @*     </a> *@
-                            @* </li> *@
+                             <li class="sidebar-item"> 
+                                 <a class="sidebar-link" asp-area="" asp-controller="Admin" asp-action="Logs"> 
+                                    <i class="lni lni-cog"></i> 
+                                     Logs
+                                 </a> 
+                             </li> 
                         </ul>
                     </li>
                 }
@@ -156,8 +156,8 @@
             </div>
         </aside>
 
-        <div class="bg-light flex-fill">
-            <div class="p-1">
+        <div class="bg-dark flex-fill">
+            <div class="">
                 <div class="row">
                     <div>
                         @RenderBody()

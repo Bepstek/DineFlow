@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using dineflow.Models;
 using dineflow.Data;
+using System.Security.Claims;
 
 namespace dineflow.Controllers
 {
@@ -36,7 +37,10 @@ namespace dineflow.Controllers
                 TotalAmount = request.Cart.Sum(item => item.Price * item.Quantity),
                 Status = request.Status
             };
-
+            if(request.ReservationId != null)
+            {
+                updatereservation(request.ReservationId);
+            }
             _context.Transactions.Add(transaction);
             await _context.SaveChangesAsync(); // Save and generate transaction_id
 
@@ -123,14 +127,24 @@ namespace dineflow.Controllers
             return newOrderId;
         }
 
+        private void updatereservation(int id)
+        {
+            var reservation = _context.Reservations.Find(id);
+            
 
+            reservation.Status = "Complete";
+            _context.Reservations.Update(reservation);
+            _context.SaveChanges();
+            
+            
+        }
 
         public class OrderRequest
         {
             public int ReservationId { get; set; }
            
             public int TableId { get; set; }
-            public int UserId { get; set; }
+            public string UserId { get; set; }
             public string Status { get; set; }
             public List<CartItem> Cart { get; set; }
 
