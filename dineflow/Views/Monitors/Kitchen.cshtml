@@ -5,8 +5,43 @@
     
     var preparingOrders = Model.Where(t => t.Status == "Preparing").ToList();
 }
+<style>
+    .btn-green {
+        background-color: #B1C29E;
+        transition: all 0.3s ease-in-out;
+    }
 
-<div class="main p-4 hero-header3">
+        .btn-green:hover {
+            background-color: #626F47;
+            transform: translateY(-3px); /* Moves the button up slightly */
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Adds a shadow for depth */
+        }
+
+    .btn-yellow {
+        background-color: #FADA7A;
+        transition: all 0.3s ease-in-out;
+    }
+
+        .btn-yellow:hover {
+            background-color: #F3CA52;
+            transform: translateY(-3px); /* Moves the button up slightly */
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Adds a shadow for depth */
+        }
+
+    .btn-orange {
+        background-color: #F0A04B;
+        transition: all 0.3s ease-in-out; /* Smooth transition */
+    }
+
+        .btn-orange:hover {
+            background-color: #F0A04B;
+            transform: translateY(-3px); /* Moves the button up slightly */
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Adds a shadow for depth */
+        }
+
+
+</style>
+<div class="container main p-4 hero-header3">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="d-flex align-items-center">
             <a asp-controller="Admin" asp-action="Settings">
@@ -45,7 +80,7 @@
                             </ul>
                         </div>
                         <div class="card-footer text-center">
-                            <a class="btn preparing btn-sm update-status"
+                            <a class="btn btn-yellow preparing btn-sm update-status"
                                asp-action="ServingOrder"
                                asp-route-id="@item.TransactionId"
                                onclick="event.preventDefault(); handleConfirmation(this, @item.TransactionId);">
