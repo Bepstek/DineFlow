@@ -1,9 +1,10 @@
+
     @using System.Security.Claims
     @model IEnumerable<dineflow.Models.Menu>
 @{
     ViewData["Title"] = "Point of Sale | DineFlow ";
     var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-    var lastName = User.FindFirstValue(ClaimTypes.Name);
+    var lastName = User.FindFirstValue(ClaimTypes.Name);  
 }
 <style>
     .product-card {
@@ -33,9 +34,11 @@
             height: 8px; /* Height of the scrollbar (for horizontal scrollbars) */
         }
 
+
         #product-list::-webkit-scrollbar-track {
             background: transparent; /* Transparent background for the track */
         }
+
 
         #product-list::-webkit-scrollbar-thumb {
             background: rgba(255, 255, 255, 0.5); /* Semi-transparent scrollbar thumb */
@@ -145,19 +148,51 @@
         border-radius: 10px; /* Rounded corners */
     }
 
+
+    .btn-green {
+        background-color: #B1C29E;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .btn-green:hover {
+        background-color: #626F47;
+            transform: translateY(-3px); /* Moves the button up slightly */
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Adds a shadow for depth */
+    }
+
+    .btn-yellow {
+        background-color: #FADA7A;
+        transition: all 0.3s ease-in-out;
+    }
+
+        .btn-yellow:hover {
+            background-color: #F3CA52;
+            transform: translateY(-3px); /* Moves the button up slightly */
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Adds a shadow for depth */
+        }
+
+    .btn-orange {
+        background-color: #F0A04B;
+        transition: all 0.3s ease-in-out; /* Smooth transition */
+    }
+
+        .btn-orange:hover {
+            background-color: #F0A04B;
+            transform: translateY(-3px); /* Moves the button up slightly */
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Adds a shadow for depth */
+        }
+
+
+
         .d-flex.overflow-auto::-webkit-scrollbar-thumb:hover {
             background: rgba(255, 255, 255, 0.9); /* Darker on hover */
         }
+
 </style>
 
 <div class="main card hero-header2">
     <div class="container-fluid">
         <div class="row">
-           
-
-
-
-            <!-- Product Section -->
             <!-- Product Section -->
             <div class="col-md-8">
                 <div>
@@ -176,16 +211,16 @@
                 <div class="row g-2" id="product-list">
                     @foreach (var product in Model)
                     {
-                        
+
                         <div class="col-md-2 product-item" data-category="@product.Category.Name">
                             @* <a onclick="addToCart(@product.Id, '@product.Name', @product.Price)" style="cursor:pointer"> *@
                             <div class="product-card p-2">
                                 <img src="~/dishimage/@product.ImageBase64" alt="@product.Name">
                                 <h5 title="@product.Name">@(product.Name.Length > 20 ? product.Name.Substring(0, 20) + "..." : product.Name)</h5>
                                 <p>₱@product.Price</p>
-                                <button class="btn btn-success btn-sm" onclick="addToCart(@product.Id, '@product.Name', @product.Price)">Add</button>
+                                    <button class="btn btn-green btn-sm text-dark" onclick="addToCart(@product.Id, '@product.Name', @product.Price)">Add</button>
                             </div>
-                           
+
                         </div>
                         
                     }
@@ -216,6 +251,7 @@
                         <div class="mb-2">Cash: <input type="number" class="form-control" id="cash-input" oninput="calculateChange()"></div>
                         <div class="mb-2">Change: ₱<span id="change">0.00</span></div>
                         <input type="hidden" id="reservation-id" value="@ViewBag.ReservationId">
+
                         <input type="hidden" id="userid"value="@userId"/>
                         <button class="btn btn-success  w-100 mt-2" onclick="checkout()">Checkout</button>
                     </div>

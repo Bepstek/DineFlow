@@ -6,7 +6,7 @@
     var servingOrders = Model.Where(t => t.Status == "Serving").ToList();
 }
 
-<div class="container mt-4">
+<div class="container main p-4 bg2">
     <h2 class="text-center text-primary"><i class="lni lni-restaurant"></i> Kitchen Orders</h2>
     <hr>
 
@@ -94,6 +94,20 @@
             .scrollable-container::-webkit-scrollbar-thumb:hover {
                 background: #555;
             }
+
+    .text-success {
+        color: #626F47;
+        text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2); /* Soft shadow */
+    }
+
+    .text-warning {
+        text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2); /* Soft shadow */
+    }
+
+    .text-primary {
+        text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2); /* Soft shadow */
+    }
+
 </style>
 
 <!-- jQuery (Ensure it's loaded before your script) -->
