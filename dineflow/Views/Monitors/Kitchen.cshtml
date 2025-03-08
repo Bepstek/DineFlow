@@ -6,32 +6,32 @@
     var preparingOrders = Model.Where(t => t.Status == "Preparing").ToList();
 }
 
-<div class="container mt-4">
+<div class="main p-4 hero-header3">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="d-flex align-items-center">
             <a asp-controller="Admin" asp-action="Settings">
-                <i class="lni lni-arrow-left mx-5"></i>
+                <i class="lni lni-arrow-left mx-5 text-dark "></i>
             </a>
-            <h3 class="text-primary mb-0"><i class="lni lni-restaurant"></i> Kitchen Monitor</h3>
+            <h3 class="text-dark mb-0"><i class="lni lni-restaurant"></i> Kitchen Monitor</h3>
         </div>
         <h4 class="text-secondary">Orders: <span class="badge bg-dark">@preparingOrders.Count</span></h4>
     </div>
     <hr>
 
     <!-- Scrollable Order List -->
-    <div class="scrollable-container">
+    <div class="scrollable-container ">
         <div class="row">
             @foreach (var item in preparingOrders)
             {
                 <div class="col-md-4 mb-4">
                     <div class="card shadow-lg">
                         <div class="card-header bg-dark text-white text-center">
-                            <h5 class="mb-0">Order: @item.OrderId</h5>
+                            <h5 class="mb-0 text-white">Order: @item.OrderId</h5>
                         </div>
                         <div class="card-body">
                             
                             <p><strong>Order Date:</strong> @item.OrderDate.ToString("yyyy-MM-dd HH:mm:ss")</p>
-                            <p><strong>Status:</strong> <span class="badge bg-info">@item.Status</span></p>
+                            <p><strong>Status:</strong> <span class="badge status">@item.Status</span></p>
                             <hr>
                             <h6>Items:</h6>
                             <ul class="list-group">
@@ -45,7 +45,7 @@
                             </ul>
                         </div>
                         <div class="card-footer text-center">
-                            <a class="btn btn-warning btn-sm update-status"
+                            <a class="btn preparing btn-sm update-status"
                                asp-action="ServingOrder"
                                asp-route-id="@item.TransactionId"
                                onclick="event.preventDefault(); handleConfirmation(this, @item.TransactionId);">
@@ -84,6 +84,21 @@
             .scrollable-container::-webkit-scrollbar-thumb:hover {
                 background: #555; /* Even darker on hover */
             }
+
+    .hero-header3 {
+        background: linear-gradient(rgba(252, 231, 200, .8), rgba(252, 231, 200, .8)), url(../img/bg-1.jpg);
+        background-position: center center;
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+
+    .status {
+        background-color: #B1C29E;
+    }
+
+    .preparing {
+        background-color: #FADA7A;
+    }
 </style>
 
 

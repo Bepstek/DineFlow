@@ -40,55 +40,55 @@
                     <img src="~/img/logo.png" alt="Logo" style="height: 60px; width: auto; margin-right:30px">
                 </button>
                 <div class="sidebar-logo">
-                    <a href="#">DineFlow</a>
+                    <h4 class="text-primary">DineFlow</h4>
                 </div>
             </div>
             <ul class="sidebar-nav">
                 <li class="sidebar-item">
-                    <a class="sidebar-link" asp-area="" asp-controller="Dashboard" asp-action="Index">
+                    <a class="sidebar-link btn link-primary  text-start" asp-area="" asp-controller="Dashboard" asp-action="Index">
                         <i class="lni lni-dashboard"></i>
                         <span>Dashboard</span>
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link" asp-area="" asp-controller="Dashboard" asp-action="Pos">
+                    <a class="sidebar-link btn link-primary  text-start" asp-area="" asp-controller="Dashboard" asp-action="Pos">
                         <i class="lni lni-cart"></i>
                         <span>POS</span>
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link" asp-area="" asp-controller="Dashboard" asp-action="Reservation">
+                    <a class="sidebar-link btn link-primary  text-start" asp-area="" asp-controller="Dashboard" asp-action="Reservation">
                         <i class="lni lni-calendar"></i>
                         <span>Reservation</span>
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link" asp-area="" asp-controller="Dashboard" asp-action="Transaction">
+                    <a class="sidebar-link btn link-primary  text-start" asp-area="" asp-controller="Dashboard" asp-action="Transaction">
                         <i class="lni lni-stats-up"></i>
                         <span>Transaction</span>
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link" asp-area="" asp-controller="Dashboard" asp-action="Inventory">
+                    <a class="sidebar-link btn link-primary  text-start" asp-area="" asp-controller="Dashboard" asp-action="Inventory">
                         <i class="lni lni-archive"></i>
                         <span>Inventory</span>
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
+                    <a href="#" class="sidebar-link collapsed has-dropdown btn link-primary  text-start" data-bs-toggle="collapse"
                        data-bs-target="#admin-monitor" aria-expanded="false" aria-controls="admin-monitor">
                         <i class="lni lni-display"></i>
                         <span>Monitors</span><i class="lni lni-chevron-down" style="margin-left:100px; " ></i>
                     </a>
                     <ul id="admin-monitor" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
                         <li class="sidebar-item">
-                            <a class="sidebar-link" asp-area="" asp-controller="Monitors" asp-action="Kitchen" target="_blank">
+                            <a class="sidebar-link btn link-primary  text-start" asp-area="" asp-controller="Monitors" asp-action="Kitchen" target="_blank">
                                 <i class="lni lni-dinner"></i>
                                 Kitchen
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a class="sidebar-link" asp-area="" asp-controller="Monitors" asp-action="Orders">
+                            <a class="sidebar-link btn link-primary  text-start" asp-area="" asp-controller="Monitors" asp-action="Orders">
                                 <i class="lni lni-library"></i>
                                 Orders
                             </a>
@@ -100,7 +100,7 @@
                 @if (User.IsInRole("Admin"))
                 {
                     <li class="sidebar-item">
-                        <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
+                        <a href="#" class="sidebar-link collapsed has-dropdown btn link-primary  text-start" data-bs-toggle="collapse"
                            data-bs-target="#admin-dropdown" aria-expanded="false" aria-controls="admin-dropdown">
                             <i class="lni lni-cog"></i>
                             <span>Admin</span><i class="lni lni-chevron-down" style="margin-left:114px; "></i>
@@ -108,7 +108,7 @@
                         
                         <ul id="admin-dropdown" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
                             <li class="sidebar-item">
-                                <a class="sidebar-link" asp-area="" asp-controller="Admin" asp-action="Management">
+                                <a class="sidebar-link btn link-primary  text-start" asp-area="" asp-controller="Admin" asp-action="Management">
                                     <i class="lni lni-users"></i>
                                     Management
                                 </a>
@@ -120,7 +120,7 @@
                             @*     </a> *@
                             @* </li> *@
                             <li class="sidebar-item">
-                                <a class="sidebar-link" asp-area="" asp-controller="Admin" asp-action="Menu">
+                                <a class="sidebar-link btn link-primary  text-start" asp-area="" asp-controller="Admin" asp-action="Menu">
                                     <i class="lni lni-package"></i>
                                     Menu
                                 </a>
@@ -138,14 +138,14 @@
             </ul>
 
             <div class="sidebar-footer">
-                <a class="sidebar-link" asp-area="Identity" asp-page="/Account/Manage/Index">
+                <a class="sidebar-link btn link-primary  text-start" asp-area="Identity" asp-page="/Account/Manage/Index">
                     <i class="lni lni-user"></i>
                     <span>@User.Identity?.Name</span>
                 </a>
             </div>
 
             <div class="sidebar-footer">
-                <a class="sidebar-link" href="#" onclick="document.getElementById('logoutForm').submit(); return false;">
+                <a class="sidebar-link btn link-primary  text-start" href="#" onclick="document.getElementById('logoutForm').submit(); return false;">
                     <i class="lni lni-exit"></i>
                     <span>Logout</span>
                 </a>
