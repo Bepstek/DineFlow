@@ -21,6 +21,8 @@
             public DbSet<ApplicationUser> ApplicationUsers { get; set; }
             public DbSet<Inventory> Inventories { get; set; }
             public DbSet<InventoryDetails> InventoryDetails { get; set; }
+        
+            public DbSet<ActivityLog> ActivityLogs { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
             {
                 base.OnModelCreating(modelBuilder);

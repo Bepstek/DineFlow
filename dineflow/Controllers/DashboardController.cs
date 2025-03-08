@@ -182,7 +182,7 @@ using System.Globalization;
         // Pagination
         int totalItems = await bookings.CountAsync();
         var reservations = await bookings
-            .OrderByDescending(r => r.Id)
+            .OrderBy(r => r.Id).Where(r => r.Status != "Complete")
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
@@ -237,7 +237,9 @@ using System.Globalization;
 
     public IActionResult Transaction(string searchString, int pageNumber = 1, int pageSize = 10)
     {
-        var transactions = _context.Transactions.AsQueryable();
+        var transactions = _context.Transactions
+        .Include(t => t.User) // Include the User entity
+        .AsQueryable();
 
         // Apply search filter
         if (!string.IsNullOrEmpty(searchString))

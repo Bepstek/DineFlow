@@ -1,4 +1,5 @@
-﻿using dineflow.Data;
+﻿using System.Security.Claims;
+using dineflow.Data;
 using dineflow.Models;
 using dineflow.ViewModel;
 using Microsoft.AspNetCore.Authorization;
@@ -11,7 +12,7 @@ using NuGet.Versioning;
 
 namespace dineflow.Controllers
 {
-    [Authorize(Roles ="Admin")]
+    [Authorize(Roles ="Admin,Manager")]
     public class AdminController : Controller
     {
 
@@ -28,6 +29,7 @@ namespace dineflow.Controllers
             _webHostEnvironment = webHostEnvironment;
             _roleManager = roleManager;
         }
+       
         public IActionResult Management()
         {
             var users = _userManager.Users.OfType<ApplicationUser>().ToList(); // Ensure type matching
@@ -113,6 +115,8 @@ namespace dineflow.Controllers
             };
 
             _context.Menus.Add(dish);
+            var logsController = new LogsController(_context);
+            logsController.ActivityLog("Create Dish", User.FindFirstValue(ClaimTypes.NameIdentifier), $"Create dish: {vm.Name}");
             _context.SaveChanges();
             return RedirectToAction("Menu");
         }
@@ -187,6 +191,7 @@ namespace dineflow.Controllers
            
 
             var dish = _context.Menus.Find(model.Id);
+            
             if (dish == null)
             {
                 return Json(new { success = false, message = "Dish not found." });
@@ -213,6 +218,8 @@ namespace dineflow.Controllers
 
             try
             {
+                var logsController = new LogsController(_context);
+                logsController.ActivityLog("Update Dish", User.FindFirstValue(ClaimTypes.NameIdentifier), $"Updated dish: {model.Name}");
                 _context.SaveChanges();
                 return Json(new { success = true });
             }
@@ -230,7 +237,7 @@ namespace dineflow.Controllers
             try
             {
                 var existingDish = await _context.Menus.FindAsync(id);
-
+                
                 if (existingDish != null)
                 {
                     existingDish.Name = collection["Name"];
@@ -249,11 +256,12 @@ namespace dineflow.Controllers
                             existingDish.ImageBase64 = Convert.ToBase64String(memoryStream.ToArray());
                         }
                     }
-
+                    var logsController = new LogsController(_context);
+                    logsController.ActivityLog("Update Dish", User.FindFirstValue(ClaimTypes.NameIdentifier), $"Updated dish: {collection["Name"]}");
                     _context.Menus.Update(existingDish);
                     await _context.SaveChangesAsync();
                 }
-
+                
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -283,7 +291,8 @@ namespace dineflow.Controllers
             menu.IsArchived = true;
             _context.Menus.Update(menu);
             _context.SaveChanges();
-
+            var logsController = new LogsController(_context);
+            logsController.ActivityLog("Archive Dish", User.FindFirstValue(ClaimTypes.NameIdentifier), $"Archive Dish: {menu.Name}");
             return RedirectToAction("Menu");
         }
 
@@ -298,7 +307,8 @@ namespace dineflow.Controllers
             menu.IsArchived = false;
             _context.Menus.Update(menu);
             _context.SaveChanges();
-
+            var logsController = new LogsController(_context);
+            logsController.ActivityLog("Unarchive Dish", User.FindFirstValue(ClaimTypes.NameIdentifier), $"Unarchive Dish: {menu.Name}");
             return RedirectToAction("Menu");
         }
 
@@ -324,6 +334,8 @@ namespace dineflow.Controllers
             {
                 _roleManager.CreateAsync(new IdentityRole(role.Name)).GetAwaiter().GetResult();
             }
+            var logsController = new LogsController(_context);
+            logsController.ActivityLog("Create Role", User.FindFirstValue(ClaimTypes.NameIdentifier), $"Create Role: {role.Name}");
             return RedirectToAction("Index");
         }
         public IActionResult Categories(string search, int page = 1, int pageSize = 10)
@@ -363,20 +375,25 @@ namespace dineflow.Controllers
 
         [HttpPost]
 
-        public async Task<IActionResult> CreateCategory(Category category)
-        {
-            var existingCategory = await _context.Categories
-                .AnyAsync(c => c.Name == category.Name); // Check if category exists
-
-            if (!existingCategory)
+            public async Task<IActionResult> CreateCategory(Category category)
             {
-                await _context.Categories.AddAsync(new Category { Name = category.Name });
-                await _context.SaveChangesAsync();
+                var existingCategory = await _context.Categories
+                    .AnyAsync(c => c.Name == category.Name); // Check if category exists
+
+                if (!existingCategory)
+                {
+                    // Add the new category
+                    await _context.Categories.AddAsync(new Category { Name = category.Name });
+                    await _context.SaveChangesAsync();
+
+                    // Log the activity
+                    var logsController = new LogsController(_context);
+                    logsController.ActivityLog("Create Category", User.FindFirstValue(ClaimTypes.NameIdentifier), $"Created category: {category.Name}");
+                }
+
+                return RedirectToAction("Categories");
             }
-
-            return RedirectToAction("Categories");
-        }
-
+        
 
 
         public IActionResult EditCategory(int id)
@@ -396,14 +413,16 @@ namespace dineflow.Controllers
             try
             {
                 var existingCategory = await _context.Categories.FindAsync(id);
-
+                string name = existingCategory.Name;
                 if (existingCategory != null)
                 {
+                    
                     existingCategory.Name = collection["Name"]; // Get updated name from form
                     _context.Categories.Update(existingCategory);
                     await _context.SaveChangesAsync();
                 }
-
+                var logsController = new LogsController(_context);
+                logsController.ActivityLog("Update Category", User.FindFirstValue(ClaimTypes.NameIdentifier), $"Update category: {name} To {collection["Name"]}");
                 return RedirectToAction(nameof(Categories)); // Redirect to categories list
             }
             catch
@@ -423,7 +442,8 @@ namespace dineflow.Controllers
             category.IsArchived = true;
             _context.Categories.Update(category);
             _context.SaveChanges();
-
+            var logsController = new LogsController(_context);
+            logsController.ActivityLog("Archive Category", User.FindFirstValue(ClaimTypes.NameIdentifier), $"Archive category: {category.Name}");
             return RedirectToAction("Categories");
         }
 
@@ -438,7 +458,8 @@ namespace dineflow.Controllers
             category.IsArchived = false;
             _context.Categories.Update(category);
             _context.SaveChanges();
-
+            var logsController = new LogsController(_context);
+            logsController.ActivityLog("Unarchive Category", User.FindFirstValue(ClaimTypes.NameIdentifier), $"Unarchive category: {category.Name}");
             return RedirectToAction("Categories");
         }
 
@@ -451,6 +472,8 @@ namespace dineflow.Controllers
             }
             _context.Categories.Remove(category);
             _context.SaveChanges();
+            var logsController = new LogsController(_context);
+            logsController.ActivityLog("Delete Category", User.FindFirstValue(ClaimTypes.NameIdentifier), $"Delete category: {category.Name}");
             return RedirectToAction("Categories");
         }
         [HttpPost]
@@ -467,7 +490,8 @@ namespace dineflow.Controllers
 
             // ✅ Update Status to "Deactivated"
             user.Status = "Deactivated";
-
+            var logsController = new LogsController(_context);
+            logsController.ActivityLog("Deactivate User", User.FindFirstValue(ClaimTypes.NameIdentifier), $"Deactivate User: {user.Lastname}");
             await _userManager.UpdateAsync(user);
 
             return RedirectToAction("Management");
@@ -487,8 +511,51 @@ namespace dineflow.Controllers
             user.LockoutEnd = null;
             user.Status = "Active";
             await _userManager.UpdateAsync(user);
-
+            var logsController = new LogsController(_context);
+            logsController.ActivityLog("Activate User", User.FindFirstValue(ClaimTypes.NameIdentifier), $"Activate User: {user.Lastname}");
             return RedirectToAction("Management");
+        }
+        public async Task<IActionResult> Logs(string searchString, int pageNumber = 1, int pageSize = 10)
+        {
+            // Base query
+            var query = _context.ActivityLogs
+                .OrderByDescending(l => l.Timestamp) // Order by most recent
+                .AsQueryable();
+
+            // Apply search filter
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                query = query.Where(l =>
+                    l.Action.Contains(searchString) ||
+                    l.Details.Contains(searchString) ||
+                    l.UserId.Contains(searchString));
+            }
+
+            // Pagination
+            int totalItems = await query.CountAsync();
+            int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+
+            var logs = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Select(l => new ActivityLog
+                {
+                    LogId = l.LogId,
+                    UserId = l.UserId,
+                    Action = l.Action,
+                    Details = l.Details,
+                    Timestamp = l.Timestamp
+                })
+                .ToListAsync();
+
+            // Pass data to the view
+            ViewBag.PageNumber = pageNumber;
+            ViewBag.PageSize = pageSize;
+            ViewBag.TotalItems = totalItems;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.SearchString = searchString;
+
+            return View(logs);
         }
 
 

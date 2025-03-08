@@ -1,6 +1,9 @@
+    @using System.Security.Claims
     @model IEnumerable<dineflow.Models.Menu>
 @{
     ViewData["Title"] = "Point of Sale | DineFlow ";
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    var lastName = User.FindFirstValue(ClaimTypes.Name);
 }
 <style>
     .product-card {
@@ -175,14 +178,14 @@
                     {
                         
                         <div class="col-md-2 product-item" data-category="@product.Category.Name">
-                            <a onclick="addToCart(@product.Id, '@product.Name', @product.Price)" style="cursor:pointer">
+                            @* <a onclick="addToCart(@product.Id, '@product.Name', @product.Price)" style="cursor:pointer"> *@
                             <div class="product-card p-2">
                                 <img src="~/dishimage/@product.ImageBase64" alt="@product.Name">
                                 <h5 title="@product.Name">@(product.Name.Length > 20 ? product.Name.Substring(0, 20) + "..." : product.Name)</h5>
                                 <p>₱@product.Price</p>
                                 <button class="btn btn-success btn-sm" onclick="addToCart(@product.Id, '@product.Name', @product.Price)">Add</button>
                             </div>
-                            </a>
+                           
                         </div>
                         
                     }
@@ -213,7 +216,7 @@
                         <div class="mb-2">Cash: <input type="number" class="form-control" id="cash-input" oninput="calculateChange()"></div>
                         <div class="mb-2">Change: ₱<span id="change">0.00</span></div>
                         <input type="hidden" id="reservation-id" value="@ViewBag.ReservationId">
-
+                        <input type="hidden" id="userid"value="@userId"/>
                         <button class="btn btn-success  w-100 mt-2" onclick="checkout()">Checkout</button>
                     </div>
                 </div>
@@ -222,7 +225,7 @@
         </div>
     </div>
 </div>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
@@ -264,7 +267,7 @@
             total += item.price * item.quantity;
             cartItems.innerHTML += `
                 <tr>
-                    <td style="max-width:100px;"><p>${item.name}s</p></td>
+                    <td style="max-width:100px;"><p>${item.name}</p></td>
                     <td>
                         <button class="btn btn-sm btn-secondary quantity-btn" onclick="changeQuantity(${item.menuitemid}, -1)">-</button>
                         ${item.quantity}
@@ -290,51 +293,163 @@
         localStorage.setItem('cart', JSON.stringify(cart));
     }
 
-        function checkout() {
-            if (cart.length === 0) {
-                alert("Cart is empty!");
-                return;
-            }
-
-            const orderData = {
-                reservationId: document.getElementById("reservation-id").value ? parseInt(document.getElementById("reservation-id").value) : null,
-                tableId: parseInt(document.getElementById("table-input").value) || null,
-                userId: 1,
-                status:  "Preparing",
-                cart: cart
-
-            };
-
-            fetch('/Orders/Checkout', {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(orderData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert(`Order placed! Transaction ID: ${data.transactionId}`);
-                cart = [];
-                saveCart();
-                updateCart();
-                 const url = new URL(window.location.href);
-            url.searchParams.delete('reservationId');
-            window.location.href = url.toString();
-            })
-            .catch(error => console.error("Error:", error));
+    function checkout() {
+        if (cart.length === 0) {
+            alert("Cart is empty!");
+            return;
         }
 
-        function filterProducts(category) {
+        const orderData = {
+            reservationId: document.getElementById("reservation-id").value ? parseInt(document.getElementById("reservation-id").value) : null,
+            tableId: parseInt(document.getElementById("table-input").value) || null,
+            userId: document.getElementById("userid").value,
+            status: "Preparing",
+            cart: cart
+        };
+
+        fetch('/Orders/Checkout', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(orderData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(`Order placed! Transaction ID: ${data.transactionId}`);
+            generateReceipt(data.transactionId,parseFloat(document.getElementById("cash-input").value));
+            cart = [];
+            saveCart();
+            updateCart();
+            const url = new URL(window.location.href);
+            url.searchParams.delete('reservationId');
+            window.location.href = url.toString();
+        })
+        .catch(error => console.error("Error:", error));
+    }
+
+         function generateReceipt(transactionId,cash) {
+
+        const doc = new jspdf.jsPDF();
+
+        // Business Information
+        const businessName = "DineFlow Restaurant";
+        const businessAddress = "123 Main Street, City, Country";
+        const businessPhone = "Phone: (+63)966 759 2570";
+        const businessEmail = "dineflow0310@gmail.com";
+
+        // Set font and size for the header
+        doc.setFontSize(20);
+        doc.setFont("helvetica", "bold");
+        doc.text(businessName, 10, 15);
+
+        // Set font and size for the address
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "normal");
+        doc.text(businessAddress, 10, 25);
+        doc.text(businessPhone, 10, 30);
+        doc.text(businessEmail, 10, 35);
+
+        // Add a horizontal line
+        doc.setLineWidth(0.5);
+        doc.line(10, 40, 200, 40);
+
+        // Transaction ID
+        doc.setFontSize(14);
+        doc.text(`Transaction ID: ${transactionId}`, 10, 50);
+
+        // Get current date and time
+        const now = new Date();
+        const formattedDate = `${now.getMonth() + 1}/${now.getDate()}/${now.getFullYear().toString().slice(-2)}`; // M/dd/yy
+        const formattedTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`; // hh:mm
+
+        // Add date and time
+        doc.text(`Date: ${formattedDate}`, 10, 60);
+        doc.text(`Time: ${formattedTime}`, 10, 65);
+
+        // Add a horizontal line
+        doc.line(10, 70, 200, 70);
+
+        // Table Headers
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "bold");
+        doc.text("Item", 10, 80); // Item column
+        doc.text("Qty", 70, 80); // Quantity column
+        doc.text("Price", 100, 80); // Price per item column
+        doc.text("Total", 150, 80); // Total price column
+
+        // Add a horizontal line
+        doc.line(10, 85, 200, 85);
+
+        // Table Rows
+        doc.setFontSize(12);
+        doc.setFont("Arial Unicode MS", "normal");
+        let startY = 95; // Starting Y position for table rows
+        let total = 0;
+
+        cart.forEach(item => {
+            const itemTotal = item.price * item.quantity;
+            total += itemTotal;
+
+            doc.text(item.name, 10, startY);
+             startY += 10;
+            // Item name
+            doc.text(item.menuitemid.toString(), 10, startY);
+
+            // Quantity
+            doc.text(item.quantity.toString(), 70, startY);
+
+            // Price per item
+            doc.text(` ${item.price.toFixed(2)}`, 100, startY); // Changed ₱ to ±
+
+            // Total price for the item
+            doc.text(` ${itemTotal.toFixed(2)}`, 150, startY); // Changed ₱ to ±
+
+
+            startY += 10; 
+           
+            
+        });
+
+        // Add a horizontal line
+        doc.line(10, startY, 200, startY);
+        const change = cash - total;
+        // Total
+        doc.setFontSize(20);
+        doc.setFont("DejaVuSans", "bold");
+        doc.text(`Total:`, 10, startY + 10); // Changed ₱ to ±
+        doc.text(`${total.toFixed(2)}`,150 ,startY +10);
+        doc.setFontSize(14);
+        doc.setFont("DejaVuSans", "normal");
+        doc.text(`Cash:`, 10, startY + 15); // Display cash
+        doc.text(`${cash.toFixed(2)}`,150,startY + 15);
+        doc.text(`Change: `, 10, startY + 20); // Display change
+        doc.text(`${change.toFixed(2)}`,150, startY +20);
+       
+        
+        doc.line(10, startY + 25, 200, startY + 25);
+
+         startY +=30;
+        // Footer
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        doc.text("Thank you for dining with us!", 10, startY );
+        doc.text("Visit us again soon!", 10, startY + 10);
+
+        // Save and open PDF in a new tab
+        doc.save(`receipt_${transactionId}.pdf`); // Save the PDF
+        window.open(doc.output('bloburl'), '_blank'); // Open in a new tab
+    }
+
+    function filterProducts(category) {
         document.querySelectorAll('.product-item').forEach(item => {
             if (category === 'All' || item.getAttribute('data-category') === category) {
-                item.style.display = "block"; // Use flex instead of block
+                item.style.display = "block";
             } else {
                 item.style.display = "none";
             }
         });
     }
-
 
     updateCart();
 </script>
