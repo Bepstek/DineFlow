@@ -6,8 +6,22 @@
     var servingOrders = Model.Where(t => t.Status == "Serving").ToList();
 }
 
-<div class="container main p-4 bg2">
-    <h2 class="text-center text-primary"><i class="lni lni-restaurant"></i> Kitchen Orders</h2>
+<div class="container main p-4 bg1">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <button onclick="window.close();" class="btn btn-link">
+                <i class="lni lni-arrow-left mx-5"></i>
+            </button>
+        </div>
+
+     
+        <div class="flex-grow-1 text-center">
+            <h3 class="text-primary mb-0"><i class="lni lni-restaurant"></i> Kitchen Monitor</h3>
+        </div>
+
+      
+        <div style="width: 150px;"></div> 
+    </div>
     <hr>
 
     <div class="row">

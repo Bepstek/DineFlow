@@ -37,7 +37,7 @@ namespace dineflow.Controllers
                 TotalAmount = request.Cart.Sum(item => item.Price * item.Quantity),
                 Status = request.Status
             };
-            if(request.ReservationId != null)
+            if(request.ReservationId != 0)
             {
                 updatereservation(request.ReservationId);
             }
