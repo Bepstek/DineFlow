@@ -215,7 +215,20 @@
                         <div class="col-md-2 product-item" data-category="@product.Category.Name">
                             @* <a onclick="addToCart(@product.Id, '@product.Name', @product.Price)" style="cursor:pointer"> *@
                             <div class="product-card p-2">
-                                <img src="~/dishimage/@product.ImageBase64" alt="@product.Name">
+                                @if (product.ImageBytes != null)
+                                {
+                                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(product.ImageBytes)"
+                                         alt="@product.Name"
+                                         class="img-fluid"
+                                         style="max-height: 150px; width: 100%; object-fit: cover;" />
+                                }
+                                else
+                                {
+                                    <!-- Placeholder if no image exists -->
+                                    <div class="text-center py-3 bg-light">
+                                        <span>No Image</span>
+                                    </div>
+                                }                                
                                 <h5 title="@product.Name">@(product.Name.Length > 20 ? product.Name.Substring(0, 20) + "..." : product.Name)</h5>
                                 <p>₱@product.Price</p>
                                     <button class="btn btn-green btn-sm text-dark" onclick="addToCart(@product.Id, '@product.Name', @product.Price)">Add</button>

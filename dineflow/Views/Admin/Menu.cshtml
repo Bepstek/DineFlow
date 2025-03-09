@@ -43,10 +43,24 @@
                             @foreach (var item in Model)
                             {
                                 <tr>
-                                    <td><img src="~/dishimage/@item.ImageBase64" class="img-fluid" width="100px" style="max-height:100px" asp-append-version="true" /></td>
+                                    @* <td><img src="~/dishimage/@item.ImageBase64" class="img-fluid" width="100px" style="max-height:100px" asp-append-version="true" /></td> *@
+                                    <td>
+                                        @if (item.ImageBytes != null)
+                                        {
+                                            <img src="data:image/jpeg;base64,@Convert.ToBase64String(item.ImageBytes)"
+                                                 class="img-fluid"
+                                                 width="100px"
+                                                 style="max-height:100px"
+                                                 asp-append-version="true" />
+                                        }
+                                        else
+                                        {
+                                            <span>No Image</span>
+                                        }
+                                    </td>
                                     <td>@Html.DisplayFor(modelItem => item.Name)</td>
                                     <td>@Html.DisplayFor(modelItem => item.Category.Name)</td>
-                                    <td>@Html.DisplayFor(modelItem => item.Price)</td>
+                                        <td>₱ @Html.DisplayFor(modelItem => item.Price)</td>
                                     <td>@(item.IsArchived ? "True" : "False")</td>
                                     <td>
                                         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editDishModal" data-id="@item.Id">Edit</button> |
@@ -184,24 +198,24 @@
 <script>
     $(document).ready(function () {
         // Handle the modal opening event
-        $('#editDishModal').on('show.bs.modal', function (event) {
-            var button = $(event.relatedTarget); // Button that triggered the modal
-            var dishId = button.data('id'); // Extract info from data-* attributes
+            $('#editDishModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget); // Button that triggered the modal
+        var dishId = button.data('id'); // Extract info from data-* attributes
 
-            // Fetch the dish data using AJAX
-            $.ajax({
-                url: '/Admin/GetDishById', // Replace with your actual endpoint
-                type: 'GET',
-                data: { id: dishId },
-                success: function (data) {
-                    // Populate the form fields with the fetched data
-                    $('#editDishId').val(data.id);
-                    $('#editDishName').val(data.name);
-                    $('#editDishDescription').val(data.description);
-                    $('#editDishPrice').val(data.price);
+        // Fetch the dish data using AJAX
+        $.ajax({
+            url: '/Admin/GetDishById', // Replace with your actual endpoint
+            type: 'GET',
+            data: { id: dishId },
+            success: function (data) {
+                // Populate the form fields with the fetched data
+                $('#editDishId').val(data.id);
+                $('#editDishName').val(data.name);
+                $('#editDishDescription').val(data.description);
+                $('#editDishPrice').val(data.price);
 
-                    // Populate the category dropdown
-                   var categoryDropdown = $('#editDishCategory');
+                // Populate the category dropdown
+                var categoryDropdown = $('#editDishCategory');
                 categoryDropdown.empty();
                 categoryDropdown.append($('<option>', {
                     value: '',
@@ -219,18 +233,18 @@
                 // Set the selected category
                 categoryDropdown.val(data.category.id);
 
-                    // Display the current image if it exists
-                    if (data.imageUrl) {
-                        $('#currentDishImage').attr('src','/dishimage/'+ data.imageUrl).show();
-                    } else {
-                        $('#currentDishImage').hide();
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error fetching dish data:', error);
+                // Display the current image if it exists
+                if (data.imageUrl) {
+                    $('#currentDishImage').attr('src', 'data:image/jpeg;base64,' + data.imageUrl).show();
+                } else {
+                    $('#currentDishImage').hide();
                 }
-            });
+            },
+            error: function (xhr, status, error) {
+                console.error('Error fetching dish data:', error);
+            }
         });
+    });
 
         // Handle form submission
             $('#editDishForm').on('submit', function (e) {

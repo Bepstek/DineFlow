@@ -38,8 +38,8 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="ImageBase64" class="form-label fw-bold">Dish Image</label>
-                            <input type="file" name="ImageBase64" class="form-control" />
+                            @* <label for="ImageBase64" class="form-label fw-bold">Dish Image</label> *@
+                            @* <input type="file" name="ImageBase64" class="form-control" /> *@
                         </div>
 
                         <div class="d-grid gap-2">
@@ -51,15 +51,15 @@
             </div>
         </div>
             
-        @if (!string.IsNullOrEmpty(Model.ImageBase64))
-        {
-            <div class="col-lg-4 col-md-10 col-sm-12 text-center mt-4" style="width:430px; height:200px;">
-                <div class="card p-3 shadow">
+        @* @if (!string.IsNullOrEmpty(Model.ImageBase64)) *@
+        @* { *@
+        @*     <div class="col-lg-4 col-md-10 col-sm-12 text-center mt-4" style="width:430px; height:200px;"> *@
+        @*         <div class="card p-3 shadow"> *@
                    
-                    <img src="~/dishimage/@Model.ImageBase64" class="img-fluid" width="auto" height="auto" asp-append-version="true" />
-                </div>
-            </div>
-        }
+        @*             <img src="~/dishimage/@Model.ImageBase64" class="img-fluid" width="auto" height="auto" asp-append-version="true" /> *@
+        @*         </div> *@
+        @*     </div> *@
+        @* } *@
     </div>
 </div>
 </div>

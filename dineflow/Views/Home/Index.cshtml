@@ -16,7 +16,7 @@
         <a class="navbar-brand d-flex align-items-center p-0" asp-area="" asp-controller="Home" asp-action="Index">
             <img src="~/img/logo.png" alt="Logo" style="height: 80px; width: auto; margin-right: 10px;">
             <h1 class="text-primary m-0"><i></i>DineFlow</h1>
-        </a>    
+        </a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
             <span class="fa fa-bars"></span>. J
@@ -28,7 +28,7 @@
                 @* <a class="nav-item nav-link" asp-area="" asp-controller="Home" asp-action="Service">Service</a> *@
                 <a class="nav-item nav-link" asp-area="" asp-controller="Home" asp-action="Menu">Menu</a>
                 @* <a class="nav-item nav-link" asp-area="" asp-controller="Home" asp-action="Role">Roles(Temporary)</a> *@
-                
+
             </div>
             <a class="btn btn-primary py-2 px-4" asp-area="" asp-controller="Home" asp-action="Booking">Reserve A Table</a>
         </div>
@@ -39,7 +39,8 @@
             <div class="row align-items-center g-5">
                 <div class="col-lg-6 text-center text-lg-start">
                     <h1 class="display-3 text-white animated slideInLeft">Enjoy Our<br>Delicious Meal</h1>
-                    <p class="text-white animated slideInLeft mb-4 pb-2">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit. Aliqu diam amet diam et eos. Clita erat ipsum et lorem et sit, sed stet lorem sit clita duo justo magna dolore erat amet</p>
+                    <p class="text-white animated slideInLeft mb-4 pb-2">Indulge in a culinary experience like no other at DineFlow, where every dish is crafted with passion and the finest ingredients. From sizzling entrées to flavorful delights, our menu is designed to satisfy every craving in a warm and inviting atmosphere.</p>
+                    @* <p class="text-white animated slideInLeft mb-4 pb-2">Reserve your table today and treat yourself to an unforgettable dining experience. Whether it’s a casual outing or a special celebration, we’re here to make every meal a moment to remember.</p> *@
                     <a class="btn btn-primary py-sm-3 px-sm-5 me-3 animated slideInLeft" asp-area="" asp-controller="Home" asp-action="Booking">Reserve A Table</a>
                 </div>
                 <div class="col-lg-6 text-center text-lg-end overflow-hidden">
@@ -117,8 +118,8 @@
             <div class="col-lg-6">
                 <h5 class="section-title ff-secondary text-start text-primary fw-normal">About Us</h5>
                 <h1 class="mb-4">Welcome to <i class="fa fa-utensils text-primary me-2"></i>DineFlow</h1>
-                <p class="mb-4">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit. Aliqu diam amet diam et eos erat ipsum et lorem et sit, sed stet lorem sit.</p>
-                <p class="mb-4">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit. Aliqu diam amet diam et eos. Clita erat ipsum et lorem et sit, sed stet lorem sit clita duo justo magna dolore erat amet</p>
+                <p class="mb-4">Welcome to DineFlow, where great food, warm hospitality, and a vibrant dining atmosphere come together. With a passion for culinary excellence, we serve a diverse selection of dishes crafted from the finest ingredients, ensuring every bite is a delightful experience. Whether you're here for a casual meal or a special occasion, our inviting ambiance and exceptional service make every visit memorable.</p>
+                <p class="mb-4">With 15 years of experience and a team of 4 master chefs, we blend tradition with innovation to create flavors that satisfy every palate. At DineFlow, we believe that dining is more than just eating—it’s about sharing moments, indulging in rich flavors, and creating memories. Join us and experience food the way it’s meant to be enjoyed.</p>
                 <div class="row g-4 mb-4">
                     <div class="col-sm-6">
                         <div class="d-flex align-items-center border-start border-5 border-primary px-3">
@@ -139,7 +140,7 @@
                         </div>
                     </div>
                 </div>
-                <a class="btn btn-primary py-3 px-5 mt-2" href="">Read More</a>
+                @* <a class="btn btn-primary py-3 px-5 mt-2" href="">Read More</a> *@
             </div>
         </div>
     </div>
@@ -185,11 +186,25 @@
                             {
                                 <div class="col-lg-6">
                                     <div class="d-flex align-items-center">
-                                        <img class="flex-shrink-0 img-fluid rounded" src="~/dishimage/@item.ImageBase64" alt="@item.Name" style="width: 100px;height:100px; object-fit; border: 1px solid #FEA116; ">
+                                        @if (item.ImageBytes != null)
+                                        {
+                            <img class="flex-shrink-0 img-fluid rounded" 
+                                 src="data:image/jpeg;base64,@Convert.ToBase64String(item.ImageBytes)" 
+                                 alt="@item.Name" 
+                                 style="width: 100px; height: 100px; object-fit: cover; border: 1px solid #FEA116;" />
+                                        }
+                                        else
+                                        {
+                           
+                            <div class="flex-shrink-0 img-fluid rounded" 
+                                 style="width: 100px; height: 100px; border: 1px solid #FEA116; background-color: #f8f9fa; display: flex; align-items: center; justify-content: center;">
+                                <span class="text-muted">No Image</span>
+                            </div>
+                                        }
                                         <div class="w-100 d-flex flex-column text-start ps-4">
                                             <h5 class="d-flex justify-content-between border-bottom pb-2">
                                                 <span>@item.Name</span>
-                                                <span class="text-primary">$@item.Price.ToString("N2")</span>
+                                                        <span class="text-primary">₱@item.Price.ToString("N2")</span>
                                             </h5>
                                             <small class="fst-italic">@item.Description</small>
                                         </div>
@@ -278,8 +293,8 @@
                     <div class="rounded-circle overflow-hidden m-4">
                         <img class="img-fluid" src="~/img/TwiceJeongyeon.jpg" alt="">
                     </div>
-                    <h5 class="mb-0">Full Name</h5>
-                    <small>Designation</small>
+                    <h5 class="mb-0">Yoo Jeong-yeon</h5>
+                    <small>Chef</small>
                     <div class="d-flex justify-content-center mt-3">
                         <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-facebook-f"></i></a>
                         <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-twitter"></i></a>
@@ -292,8 +307,8 @@
                     <div class="rounded-circle overflow-hidden m-4">
                         <img class="img-fluid" src="~/img/TwiceMina.jpg" alt="">
                     </div>
-                    <h5 class="mb-0">Full Name</h5>
-                    <small>Designation</small>
+                    <h5 class="mb-0">Mina Myoi Lopez</h5>
+                    <small>Chef</small>
                     <div class="d-flex justify-content-center mt-3">
                         <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-facebook-f"></i></a>
                         <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-twitter"></i></a>
@@ -306,8 +321,8 @@
                     <div class="rounded-circle overflow-hidden m-4">
                         <img class="img-fluid" src="~/img/TwiceNaeyon.jpg" alt="">
                     </div>
-                    <h5 class="mb-0">Full Name</h5>
-                    <small>Designation</small>
+                    <h5 class="mb-0">Im Na-yeon</h5>
+                    <small>Chef</small>
                     <div class="d-flex justify-content-center mt-3">
                         <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-facebook-f"></i></a>
                         <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-twitter"></i></a>
@@ -320,8 +335,8 @@
                     <div class="rounded-circle overflow-hidden m-4">
                         <img class="img-fluid" src="~/img/TwiceDahyun.jpg" alt="">
                     </div>
-                    <h5 class="mb-0">Full Name</h5>
-                    <small>Designation</small>
+                    <h5 class="mb-0">Kim Da-hyun</h5>
+                    <small>Chef</small>
                     <div class="d-flex justify-content-center mt-3">
                         <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-facebook-f"></i></a>
                         <a class="btn btn-square btn-primary mx-1" href=""><i class="fab fa-twitter"></i></a>

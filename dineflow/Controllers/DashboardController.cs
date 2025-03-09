@@ -199,23 +199,23 @@ using System.Globalization;
 
 
 
-    [HttpPost]
-    public IActionResult CreateDish(MenuViewModel vm)
-    {
-        string stringFileName = UploadFile(vm);
-        var dish = new Menu
-        {
-            Name = vm.Name,
-            CategoryId = vm.CategoryId, // Ensure ViewModel has CategoryId
-            Description = vm.Description,
-            Price = vm.Price,
-            ImageBase64 = stringFileName
-        };
+    //[HttpPost]
+    //public IActionResult CreateDish(MenuViewModel vm)
+    //{
+    //    string stringFileName = UploadFile(vm);
+    //    var dish = new Menu
+    //    {
+    //        Name = vm.Name,
+    //        CategoryId = vm.CategoryId, // Ensure ViewModel has CategoryId
+    //        Description = vm.Description,
+    //        Price = vm.Price,
+    //       // ImageBase64 = stringFileName
+    //    };
 
-        _context.Menus.Add(dish);
-        _context.SaveChanges();
-        return RedirectToAction("Menu");
-    }
+    //    _context.Menus.Add(dish);
+    //    _context.SaveChanges();
+    //    return RedirectToAction("Menu");
+    //}
 
 
     private string UploadFile(MenuViewModel vm)

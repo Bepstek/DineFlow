@@ -60,6 +60,9 @@ namespace dineflow.Controllers
                 query = query.Where(m => m.Name.Contains(search) || m.Category.Name.Contains(search));
             }
 
+            // Apply category filter: Exclude menus from categories where Id is 1 or IsArchived is false
+            query = query.Where(m => m.Category.Id != 1 && !m.Category.IsArchived);
+
             // Populate ViewBag.Categories
             ViewBag.Categories = _context.Categories
                                          .Where(c => !c.IsArchived) // Exclude archived categories
@@ -104,14 +107,15 @@ namespace dineflow.Controllers
         [HttpPost]
         public IActionResult CreateDish(MenuViewModel vm)
         {
-            string stringFileName = UploadFile(vm);
+            byte[] imageBytes = ConvertImageToByteArray(vm);
+
             var dish = new Menu
             {
                 Name = vm.Name,
-                CategoryId = vm.CategoryId, // Ensure ViewModel has CategoryId
+                CategoryId = vm.CategoryId,
                 Description = vm.Description,
                 Price = vm.Price,
-                ImageBase64 = stringFileName
+                ImageBytes = imageBytes // Store the byte array in the database
             };
 
             _context.Menus.Add(dish);
@@ -120,23 +124,21 @@ namespace dineflow.Controllers
             _context.SaveChanges();
             return RedirectToAction("Menu");
         }
-
-
-        private string UploadFile(MenuViewModel vm)
+        private byte[] ConvertImageToByteArray(MenuViewModel vm)
         {
-            string fileName = null;
-            if (vm.ImageFile != null)
+            if (vm.ImageFile != null && vm.ImageFile.Length > 0)
             {
-                string uploadDir = Path.Combine(_webHostEnvironment.WebRootPath, "dishimage");
-                fileName = Guid.NewGuid().ToString() + "-" + vm.ImageFile.FileName;
-                string filePath = Path.Combine(uploadDir, fileName);
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                using (var memoryStream = new MemoryStream())
                 {
-                    vm.ImageFile.CopyTo(fileStream);
+                    vm.ImageFile.CopyTo(memoryStream);
+                    return memoryStream.ToArray(); // Convert the image to a byte array
                 }
             }
-            return fileName;
+            return null; // Return null if no image is uploaded
         }
+
+
+      
 
         public IActionResult GetDishById(int id)
         {
@@ -149,27 +151,22 @@ namespace dineflow.Controllers
                 return NotFound();
             }
 
-            var categories = _context.Categories
-                .Select(c => new { c.Id, c.Name,c.IsArchived })
-                 .Where(c => !c.IsArchived) // Exclude archived categories
-                                     .ToList();
-
-            var dishData = new
+            var result = new
             {
                 id = dish.Id,
                 name = dish.Name,
                 description = dish.Description,
                 price = dish.Price,
-                category = new
-                {
-                    id = dish.Category.Id,
-                    name = dish.Category.Name
-                },
-                imageUrl = dish.ImageBase64, // Filename of the image
-                categories = categories // List of all categories
+                category = new { id = dish.Category.Id, name = dish.Category.Name },
+                categories = _context.Categories
+                    .Select(c => new { id = c.Id, name = c.Name })
+                    .ToList(),
+                imageUrl = dish.ImageBytes != null
+                    ? Convert.ToBase64String(dish.ImageBytes)
+                    : null // Convert byte array to Base64
             };
 
-            return Json(dishData);
+            return Json(result);
         }
         //to be removed
         public IActionResult EditDish(int id)
@@ -185,91 +182,111 @@ namespace dineflow.Controllers
                 return View(menu);
             }
 
-        [HttpPost]
         public IActionResult UpdateDish(Menu model, IFormFile imageFile)
         {
-           
+            // Validate the model
+            if (model == null)
+            {
+                return Json(new { success = false, message = "Invalid dish data." });
+            }
 
+            // Find the dish in the database
             var dish = _context.Menus.Find(model.Id);
-            
             if (dish == null)
             {
                 return Json(new { success = false, message = "Dish not found." });
             }
 
+            // Update dish properties
             dish.Name = model.Name;
             dish.Description = model.Description;
             dish.Price = model.Price;
             dish.CategoryId = model.CategoryId;
 
-            if (imageFile != null)
+            // Update the image if a new file is uploaded
+            if (imageFile != null && imageFile.Length > 0)
             {
-                // Handle image upload logic here
-                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
-                var filePath = Path.Combine("wwwroot/dishimage", fileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    imageFile.CopyTo(stream);
-                }
-
-                dish.ImageBase64 = fileName;
+                byte[] imageBytes = ConvertImageToByteArray(imageFile);
+                dish.ImageBytes = imageBytes; // Update the image bytes
             }
 
             try
             {
+                // Log the activity
                 var logsController = new LogsController(_context);
-                logsController.ActivityLog("Update Dish", User.FindFirstValue(ClaimTypes.NameIdentifier), $"Updated dish: {model.Name}");
+                logsController.ActivityLog(
+                    "Update Dish",
+                    User.FindFirstValue(ClaimTypes.NameIdentifier),
+                    $"Updated dish: {model.Name}" + (imageFile != null ? " (Image updated)" : "")
+                );
+
+                // Save changes to the database
                 _context.SaveChanges();
                 return Json(new { success = true });
             }
             catch (Exception ex)
             {
+                // Handle errors
                 return Json(new { success = false, message = "Error saving to database.", error = ex.Message });
             }
         }
 
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditDish(int id, IFormCollection collection)
+        // Helper method to convert IFormFile to byte array
+        private byte[] ConvertImageToByteArray(IFormFile imageFile)
         {
-            try
+            if (imageFile == null || imageFile.Length == 0)
             {
-                var existingDish = await _context.Menus.FindAsync(id);
-                
-                if (existingDish != null)
-                {
-                    existingDish.Name = collection["Name"];
-                    existingDish.CategoryId = int.Parse(collection["CategoryId"]);
-                    existingDish.Description = collection["Description"];
-                    existingDish.Price = decimal.Parse(collection["Price"]);
-                   
-
-                    // Check if an image was uploaded
-                    var file = Request.Form.Files["ImageBase64"];
-                    if (file != null && file.Length > 0)
-                    {
-                        using (var memoryStream = new MemoryStream())
-                        {
-                            await file.CopyToAsync(memoryStream);
-                            existingDish.ImageBase64 = Convert.ToBase64String(memoryStream.ToArray());
-                        }
-                    }
-                    var logsController = new LogsController(_context);
-                    logsController.ActivityLog("Update Dish", User.FindFirstValue(ClaimTypes.NameIdentifier), $"Updated dish: {collection["Name"]}");
-                    _context.Menus.Update(existingDish);
-                    await _context.SaveChangesAsync();
-                }
-                
-                return RedirectToAction(nameof(Index));
+                return null;
             }
-            catch
+
+            using (var memoryStream = new MemoryStream())
             {
-                return View();
+                imageFile.CopyTo(memoryStream);
+                return memoryStream.ToArray();
             }
         }
-       // remove edit method
+
+
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> EditDish(int id, IFormCollection collection)
+        //{
+        //    try
+        //    {
+        //        var existingDish = await _context.Menus.FindAsync(id);
+
+        //        if (existingDish != null)
+        //        {
+        //            existingDish.Name = collection["Name"];
+        //            existingDish.CategoryId = int.Parse(collection["CategoryId"]);
+        //            existingDish.Description = collection["Description"];
+        //            existingDish.Price = decimal.Parse(collection["Price"]);
+
+
+        //            // Check if an image was uploaded
+        //            var file = Request.Form.Files["ImageBase64"];
+        //            if (file != null && file.Length > 0)
+        //            {
+        //                using (var memoryStream = new MemoryStream())
+        //                {
+        //                    await file.CopyToAsync(memoryStream);
+        //                    existingDish.ImageBase64 = Convert.ToBase64String(memoryStream.ToArray());
+        //                }
+        //            }
+        //            var logsController = new LogsController(_context);
+        //            logsController.ActivityLog("Update Dish", User.FindFirstValue(ClaimTypes.NameIdentifier), $"Updated dish: {collection["Name"]}");
+        //            _context.Menus.Update(existingDish);
+        //            await _context.SaveChangesAsync();
+        //        }
+
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    catch
+        //    {
+        //        return View();
+        //    }
+        //}
+        // remove edit method
         public IActionResult DetailDish(int id)
         {
             var menu = _context.Menus.Find(id);

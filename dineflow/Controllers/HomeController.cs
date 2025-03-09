@@ -36,10 +36,26 @@ namespace dineflow.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateRole(IdentityRole role)
         {
-            if (!_roleManager.RoleExistsAsync(role.Name).GetAwaiter().GetResult())
+            // Check if the role already exists
+            if (!await _roleManager.RoleExistsAsync(role.Name))
             {
-                _roleManager.CreateAsync(new IdentityRole(role.Name)).GetAwaiter().GetResult();
+                // Create the role if it doesn't exist
+                var result = await _roleManager.CreateAsync(new IdentityRole(role.Name));
+
+                // Optionally, you can check if the role creation was successful
+                if (!result.Succeeded)
+                {
+                    // Handle the error, e.g., log it or return an error view
+                    // For example, you can add errors to the ModelState and return to the view
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                    return View(); // Return to the view with errors
+                }
             }
+
+            // Redirect to the Index action if the role was created successfully or already exists
             return RedirectToAction("Index");
         }
         public IActionResult Index()

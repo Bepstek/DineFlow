@@ -78,7 +78,7 @@
                     <a href="#" class="sidebar-link collapsed has-dropdown btn link-primary  text-start" data-bs-toggle="collapse"
                        data-bs-target="#admin-monitor" aria-expanded="false" aria-controls="admin-monitor">
                         <i class="lni lni-display"></i>
-                        <span>Monitors</span><i class="lni lni-chevron-down" style="margin-left:100px; " ></i>
+                        <span>Monitors</span><i class="lni lni-chevron-down" style="margin-left:86px; " ></i>
                     </a>
                     <ul id="admin-monitor" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
                         <li class="sidebar-item">
@@ -97,7 +97,7 @@
                     >
                 </li>
 
-                @if (User.IsInRole("Admin"))
+                @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
                 {
                     <li class="sidebar-item">
                         <a href="#" class="sidebar-link collapsed has-dropdown btn link-primary  text-start" data-bs-toggle="collapse"
@@ -129,7 +129,7 @@
                              <li class="sidebar-item"> 
                                  <a class="sidebar-link" asp-area="" asp-controller="Admin" asp-action="Logs"> 
                                     <i class="lni lni-cog"></i> 
-                                     Logs
+                                     LOGS
                                  </a> 
                              </li> 
                         </ul>

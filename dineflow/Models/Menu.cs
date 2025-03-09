@@ -24,8 +24,9 @@ namespace dineflow.Models
         [Range(0, double.MaxValue)]
         public decimal Price { get; set; }
 
-        public string ImageBase64 { get; set; }
+       
 
+        public byte[] ImageBytes { get; set; }
         public bool IsArchived { get; set; } = false;
     }
 }
