@@ -22,8 +22,9 @@ builder.Services.AddDefaultIdentity<IdentityUser>().AddDefaultTokenProviders()
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-builder.Services.AddScoped<IActivityLogger, LogsController>();
+
 builder.Services.AddScoped<EmailService>();
+builder.Services.AddScoped<IActivityLogger, LogsController>();
 // Startup.cs or Program.cs
 
 

@@ -108,7 +108,6 @@ namespace dineflow.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-
         public async Task<IActionResult> SubmitBooking(Reservation reservation)
         {
             if (ModelState.IsValid)
@@ -120,7 +119,9 @@ namespace dineflow.Controllers
                     PhoneNumber = reservation.PhoneNumber,
                     NumberOfPeople = reservation.NumberOfPeople,
                     ReservedDate = reservation.ReservedDate,
+                    Status = reservation.Status,
                     DateTime = DateTime.Now
+                   
                 };
 
                 _context.Reservations.Add(newReservation);
